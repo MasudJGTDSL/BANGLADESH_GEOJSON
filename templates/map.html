@@ -1,0 +1,43 @@
+{% load static %}
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet Map</title>
+{% tailwind_css %}
+<link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
+<script src="{% static 'dist/leaflet.js' %}"></script>
+</head>
+<body>
+  <div id="map" style="height:500px;"></div>
+
+  <script>
+    // Initialize map
+    var map = L.map('map').setView([23.6216, 89.2999], 10);
+
+    // Add basemap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    // Load GeoJSON from Django context
+    var geojsonData = {{ geojson|safe }};
+    L.geoJSON(geojsonData, {
+      onEachFeature: function (feature, layer) {
+        // if (feature.properties && feature.properties.ADM4_EN) {
+        if (feature.properties && feature.properties.ADM2_EN) {
+        //   layer.bindPopup(`${feature.id}.${feature.properties.ADM4_EN}`);
+          layer.bindPopup(`${feature.id}.${feature.properties.ADM2_EN}`);
+        }
+      }
+    }).addTo(map);
+  </script>
+
+  <h3>Polygon Properties</h3>
+  <ul>
+    {% for poly in polygons %}
+      <li>{{ poly.name }} — Area: {{ poly.area }} — Length: {{ poly.length }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

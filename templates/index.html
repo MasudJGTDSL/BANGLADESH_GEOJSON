@@ -1,0 +1,321 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% tailwind_css %}
+<link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
+<script src="{% static 'dist/leaflet.js' %}"></script>
+<!-- <script src="{% static 'dist/turf.min.js' %}"></script> -->
+<style>
+    .bangla {
+        font-family: 'Kalpurush', 'SolaimanLipi', 'BanglaFontNikosh'; letter-spacing: 0.05em; word-spacing: 0.15em;
+    }
+    .leaflet-container {
+        height: 400px;
+        width: 100%;
+        border-radius: 8px;
+    }
+</style>
+</head>
+<body>
+    <div class="grid lg:grid-cols-10 gap-1 w-full px-2 my-3">
+    <div class="grid lg:grid-cols-5 col-span-5 gap-1">
+    <h1 class="flex justify-center col-span-5 text-2xl items-center font-bold bg-gray-300 text-center border border-gray-400 rounded-md my-2 py-1">Administrative Zone Information</h1>
+
+<fieldset class="fieldset col-span-2 bg-base-200 border-gray-400 rounded-box border p-4">        
+<legend class="fieldset-legend bg-gray-300 text-gray-600 px-2 py-0 rounded-sm text-md">Select for Information</legend>
+    <form method="GET">
+    <select id="division" class="select select-neutral py-2 mb-4">
+    <option disabled selected value="">Select Division</option>
+    {% for division in divisions %}
+        <option value="{{ division.id }}">{{ division.name }}</option>
+    {% endfor %}
+    </select>
+
+    <select id="district" class="select select-neutral py-2 mb-4">
+        <option disabled selected value="">Select District</option>
+    </select>
+    <a href="" target="_blank"></a>
+    <select id="upazila" class="select select-neutral py-2 mb-4">
+        <option disabled selected value="">Select Upazila</option>
+    </select>
+
+    <select id="union" class="select select-neutral py-2 mb-0">
+        <option disabled selected value="">Select Union</option>
+    </select>
+    </form>
+</fieldset>
+<fieldset class="fieldset col-span-3 mx-0 bg-base-200 border-gray-400 rounded-box border mt-2 px-2 pt-3">
+    {% comment %} <legend class="fieldset-legend bg-gray-300 text-gray-600 px-2 py-0 rounded-md text-lg">Details Information</legend> {% endcomment %}
+    <div id="division_info" class="w-full mt-0"></div>
+    <div id="district_info" class="w-full mt-0"></div>
+    <div id="upazila_info" class="w-full mt-0"></div>
+    <div id="union_info" class="w-full mt-0"></div>
+</fieldset>
+
+</div>
+<div id="main_map" class="col-span-5 mt-2 mx-auto"></div>
+</div>
+<div class="grid lg:grid-cols-3 border-1 border-gray-500 mx-2 gap-1 p-2 overflow-x-auto">
+
+        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
+    
+    <table class="table border-gray-300 table-sm">
+        <thead>
+            <tr><th colspan="3" class="border border-blue-600 text-lg text-gray-200 bg-blue-600 text-center font-bold py-1 my-0">Divisions Information</th></tr>
+            <tr class="text-center">
+                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{divisions_info.large_division.name}}</td>
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{divisions_info.small_division.name}}</td>
+                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{divisions_info.average_division.avg_area|floatformat:"2g"}} Km²</td>
+            </tr>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold">{{divisions_info.large_division.area_km2|floatformat:"2g"}} Km²</td>
+                <td class="border border-gray-300 text-md font-bold">{{divisions_info.small_division.area_km2|floatformat:"2g"}} Km²</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
+    
+    <table class="table table-zebra table-bordered table-bordered table-sm">
+        <thead>
+            <tr><td colspan="3" class="border border-amber-600 text-lg text-gray-200 bg-amber-600 text-center font-bold py-1 my-0">Districts Information</td></tr>
+            <tr class="text-center">
+                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{districts_info.large_district.name}}, {{districts_info.large_district.properties.ADM1_EN}}</td>
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{districts_info.small_district.name}}, {{districts_info.small_district.properties.ADM1_EN}}</td>
+                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{districts_info.average_district.avg_area|floatformat:"2g"}} Km²</td>
+            </tr>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold">{{districts_info.large_district.area_km2|floatformat:"2g"}} Km²</td>
+                <td class="border border-gray-300 text-md font-bold">{{districts_info.small_district.area_km2|floatformat:"2g"}} Km²</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
+    
+    <table class="table table-zebra table-bordered table-bordered table-sm">
+        <thead>
+            <tr><td colspan="3" class="border border-emerald-600 text-lg text-gray-200 bg-emerald-600 text-center font-bold py-1 my-0">Upazila Information</td></tr>
+            <tr class="text-center">
+                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{upazilas_info.large_upazila.name}}, {{upazilas_info.large_upazila.properties.ADM3_EN}}, {{upazilas_info.large_upazila.properties.ADM2_EN}}</td>
+                <td class="border border-gray-300 text-md font-bold text-gray-600">{{upazilas_info.small_upazila.name}}, {{upazilas_info.small_upazila.properties.ADM3_EN}}, {{upazilas_info.small_upazila.properties.ADM2_EN}}</td>
+                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{upazilas_info.average_upazila.avg_area|floatformat:"2g"}} Km²</td>
+            </tr>
+            <tr class="text-center">
+                <td class="border border-gray-300 text-md font-bold">{{upazilas_info.large_upazila.area_km2|floatformat:"2g"}} Km²</td>
+                <td class="border border-gray-300 text-md font-bold">{{upazilas_info.small_upazila.area_km2|floatformat:"2g"}} Km²</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="p-2 w-full">
+    <div class="border-1 border-gray-600 rounded-md p-5">
+        {{ chart_division|safe }}
+    </div>
+</div>
+
+<div class="p-2 w-full">
+    <div class="border-1 border-gray-600 rounded-md p-5">
+        {{ chart_districts|safe }}
+    </div>
+</div>
+<script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+    <script>
+function setupDependentDropdown(parentId, childId, url, paramName = "id", itemName="option", resetIds = []) {
+    const parentDropdown = document.getElementById(parentId);
+    const childDropdown = document.getElementById(childId);
+
+    parentDropdown.addEventListener("change", function () {
+        const parentValue = this.value;
+
+        // ✅ Reset child dropdown
+        childDropdown.innerHTML = `<option value="">Select ${itemName[0]}</option>`;
+
+        // ✅ Reset all deeper children
+        let i = 1;
+        resetIds.forEach(id => {
+            const deeperDropdown = document.getElementById(id);
+        if (deeperDropdown) {
+                deeperDropdown.innerHTML = `<option value="">Select ${itemName[i]}</option>`;
+            }
+            i+=1;
+        }
+        );
+
+        // ✅ Populate immediate child if parent has value
+        if (parentValue) {
+            fetch(`${url}?${paramName}=${parentValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        childDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading dropdown:", error);
+                });
+        }
+    });
+}
+</script>
+
+<script>
+  // Division → District
+  setupDependentDropdown("division", "district", "/get_districts/", "division_id", itemName=["District","Upazila","Union"], resetIds =["upazila","union"]);
+
+  // District → Upazila
+  setupDependentDropdown("district", "upazila", "/get_upazilas/", "district_id", itemName=["Upazila","Union"], resetIds =["union"]);
+  
+  // District → Union
+  setupDependentDropdown("upazila", "union", "/get_unions/", "upazila_id", itemName=["Union"]);
+</script>
+
+<script>
+var main_map = L.map('main_map').setView([23.8103, 90.4125], 7);
+
+var primary_layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(main_map);
+// L.geoJSON(polygonData).addTo(main_map);
+//New FIXME: ------------
+ var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                subdomains:['mt0','mt1','mt2','mt3'],
+                attribution: '© Google'
+                    });
+                // googleSat.addTo(main_map);
+
+var baseLayers = {
+                    "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                    "Satellite": googleSat
+                };
+                L.control.layers(baseLayers).addTo(main_map);
+//New FIXME: ------------
+
+var current_marker = L.marker([23.8103, 90.4125]).addTo(main_map)
+    .bindPopup("<span class='text-lg text-amber-600'>Dhaka City</span>")
+    .openPopup();
+
+// TODO: for information divs =============
+const url = "/get_info/"
+var polygon
+
+function information(dropdownId, infoDivId,url_id, clearDiv=[]){
+    const dropdown = document.getElementById(dropdownId);
+    const infoDiv  = document.getElementById(infoDivId);
+
+    dropdown.addEventListener("change", function () {
+        clearDiv.forEach(id => {
+            const deeperDropdown = document.getElementById(id);
+            deeperDropdown.innerHTML = ``;
+        }
+        );
+    const dropdownValue = this.value;
+    fetch(`${url}?${url_id}=${dropdownValue}`)
+        .then(response => response.json())
+        .then(data => {
+
+        infoDivStr = `
+            <fieldset class="fieldset bg-base-200 border-gray-300 my-0 rounded-box w-full border pt-1 px-2">
+            <legend class="fieldset-legend text-xs text-gray-500 mt-0 py-0 font-bold">${dropdownId.toUpperCase()}:</legend>
+            <div class="flex justify-between">
+                <div class="join">
+                <div class="badge badge-soft badge-lg badge-primary text-sm px-1 font-bold join-item"><span class="text-red-600">${data[0].name}</span></div>
+                <div class="badge badge-soft badge-lg badge-primary text-sm px-1 font-bold join-item"><span class="text-red-600"><span class="bangla">[${data[0].bn_name}]</span></div>
+                </div>
+
+                <div class="join">
+                <a
+                href="https://${data[0].url}" target="_blank">
+                <button class="btn btn-sm join-item px-2 py-0">
+                <img src="{% static '/images/www.svg' %}" width="20px" height="20px" alt="map_marker">
+                </button>
+                </a>`
+
+        if (data[0].lat !== 0) {
+            infoDivStr +=`<a 
+                    href="https://www.google.com/maps?q=${data[0].lat},${data[0].long}" target="_blank" title="Goto Google Map">
+                    <button class="btn btn-sm join-item px-2 py-0">
+                    <img src="{% static '/images/map-pin.svg' %}" width="24px" height="16px" alt="map_marker">
+                    </button>
+                    </a>`
+            }
+        infoDivStr +=`</div>
+            </div>
+            </fieldset>`
+
+        infoDiv.innerHTML = infoDivStr
+
+        // ✅ Update Map Marker
+        if (main_map && data[0].lat && data[0].long && data[0].lat != 0) {
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].long);
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+                if (current_marker) {
+                    main_map.removeLayer(current_marker);
+                }
+                current_marker = L.marker([lat, lng]).addTo(main_map)
+                    .bindPopup(data[0].name)
+                    .openPopup();
+                main_map.setView([lat, lng], 10);
+
+            }
+               
+        }
+                if (data[0].polygon_data){
+                    var Address = `<span class="text-red-500 font-bold">
+                    ${data[0].polygon_data.features[0].properties.ADM4_EN ? data[0].polygon_data.features[0].properties.ADM4_EN + ",":""}
+                    ${data[0].polygon_data.features[0].properties.ADM3_EN ? data[0].polygon_data.features[0].properties.ADM3_EN + ",":""}
+                    ${data[0].polygon_data.features[0].properties.ADM2_EN ? data[0].polygon_data.features[0].properties.ADM2_EN + ",":""}
+                    ${data[0].polygon_data.features[0].properties.ADM1_EN ?? ""}</span><br>
+                    Area: ${data[0].polygon_data.features[0].area.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km²<br>
+                    Perimeter: ${data[0].polygon_data.features[0].perimeter.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km
+                    `
+                    if (polygon) {
+                    main_map.removeLayer(polygon);
+                    }
+                    var polygonCoords = data[0].polygon_data;
+                    polygon = L.geoJSON(polygonCoords, {
+                    color: 'blue',
+                    fillColor: 'lightblue',
+                    fillOpacity: 0.5
+                    }).addTo(main_map)
+                    .bindPopup(Address).openPopup();
+                }
+    })
+        .catch(error => {
+            console.error("Error loading info:", error);
+        });
+
+    });
+    }
+    information(dropdownId="division", infoDivId="division_info", url_id="division_id", clearDiv =["district_info","upazila_info","union_info"])
+    information(dropdownId="district", infoDivId="district_info", url_id="district_id", clearDiv =["upazila_info","union_info"])
+    information(dropdownId="upazila", infoDivId="upazila_info", url_id="upazila_id", clearDiv =["union_info"])
+    information(dropdownId="union", infoDivId="union_info", url_id="union_id")
+</script>
+</body>
+</html>
