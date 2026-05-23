@@ -293,14 +293,17 @@ function information(dropdownId, infoDivId,url_id, clearDiv=[]){
                
         }
                 if (data[0].polygon_data){
-                    var Address = `<span class="text-red-500 font-bold">
+                    var Address = `<span class="flex justify-between gap-2 items-center relative">
+                        <span class=""><img src="{% static 'images/bd.svg' %}" class="absolute -left-6 -top-1" width=60px" alt="map"></span>
+                        <span class="ml-6">
+                            <span class="text-red-500 font-bold">
                     ${data[0].polygon_data.features[0].properties.ADM4_EN ? data[0].polygon_data.features[0].properties.ADM4_EN + ",":""}
                     ${data[0].polygon_data.features[0].properties.ADM3_EN ? data[0].polygon_data.features[0].properties.ADM3_EN + ",":""}
                     ${data[0].polygon_data.features[0].properties.ADM2_EN ? data[0].polygon_data.features[0].properties.ADM2_EN + ",":""}
                     ${data[0].polygon_data.features[0].properties.ADM1_EN ?? ""}</span><br>
                     Area: ${data[0].polygon_data.features[0].area.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km²<br>
                     Perimeter: ${data[0].polygon_data.features[0].perimeter.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km
-                    `
+                        </span></span>`
                     if (polygon) {
                     main_map.removeLayer(polygon);
                     }
