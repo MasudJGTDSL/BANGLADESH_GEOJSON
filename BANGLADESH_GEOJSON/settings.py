@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+from dotenv import dotenv_values, load_dotenv
+config = {**dotenv_values(".env")} 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,9 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_r5oh%e&by*-%$9qdmt%r#aaj8+e(15c^vm23#oqqh5b#&^6p-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = int(config["DEBUG"])
+ALLOWED_HOSTS = config["ALLOWED_HOSTS"].split(" ")
 
 
 # Application definition
@@ -33,10 +34,11 @@ INSTALLED_APPS = [
     'theme', # The name of the app you created during init
     'django_browser_reload', # Optional: for hot-reloading
     'django_extensions',
+    'whitenoise',
 ]
 
 TAILWIND_APP_NAME = 'theme'
-NPM_BIN_PATH="C:/Program Files/nodejs/npm.cmd"
+NPM_BIN_PATH = config["NPM_BIN_PATH"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 MIDDLEWARE = [
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 if DEBUG:
     # Add django_browser_reload middleware only in DEBUG mode
@@ -126,6 +129,14 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "leaflet",
 ]
+STATIC_ROOT = config["STATIC_ROOT"]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_MANIFEST_STRICT = False 
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT =  config["MEDIA_ROOT"]
+
+
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (23.8103, 90.4125),   # Dhaka, Bangladesh

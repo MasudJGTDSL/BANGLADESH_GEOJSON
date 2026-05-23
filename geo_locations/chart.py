@@ -43,7 +43,7 @@ def pie_chart(query_set, label_field, data_field):
     return {"labels": labels, "data": data}
 
 def chart(table, area_table, title):
-    qs_table = table.objects.values("name","geojson")
+    qs_table = table.objects.values("name","geojson").order_by("name")
     areas = area_table.objects.values("feature_id", "area_km2")
     final_data = []
     for item in qs_table:
@@ -51,13 +51,9 @@ def chart(table, area_table, title):
             if item["geojson"]==area["feature_id"]:
                 final_data.append({"name":item["name"], "area":area["area_km2"]})
                 break
-            
-    clr = ['steelblue', 'firebrick', 'lightgreen']
-    # df_table = pd.DataFrame(final_data, columns=["name","area"])
-    # print(df_table)
     
     fig_table = go.Bar(
-    x = [item["name"] for item in final_data],
+    x = [f'{_}. {item["name"]}' for _, item in enumerate(final_data, start=1)],
     y = [item["area"] for item in final_data],
     # marker_color= clr,
     # color='area',
@@ -65,7 +61,9 @@ def chart(table, area_table, title):
     # textposition='inside', 
     # insidetextanchor='middle',
     # orientation='h',
-    text=[f"{x["area"]:,.2f} Km²" for x in final_data],
+    text=[f"{x['area']:,.2f} Km²" for x in final_data],
+    hovertext=[f"🗺️ <span style='color:#FF7D40; font-weight:bold;'>{x['name']}:</span> {x['area']:,.2f} Km²" for x in final_data],
+    hoverinfo='text',
     textfont=dict(size=10, color='white'),
     textposition='auto',
     name = f'{title} Name',
