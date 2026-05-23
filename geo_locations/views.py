@@ -1,5 +1,8 @@
+# pyrefly: ignore [missing-import]
 from django.shortcuts import render
+# pyrefly: ignore [missing-import]
 from django.db.models import F, Case, When,Max, Min, Avg, Value, IntegerField, Count, CharField, TextField, JSONField
+# pyrefly: ignore [missing-import]
 from django.http import JsonResponse
 import json
 from .models import (Divisions, Districts, Upazilas, Unions,
@@ -22,6 +25,7 @@ def run_auto_migrations():
     if not _migrations_checked:
         _migrations_checked = True
         try:
+            # pyrefly: ignore [missing-import]
             from django.core.management import call_command
             # Check and run database migrations
             call_command('makemigrations', 'geo_locations')

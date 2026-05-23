@@ -1,4 +1,5 @@
 import requests
+# pyrefly: ignore [missing-import]
 from django.utils import timezone
 from .models import Visitor
 
