@@ -1,4 +1,4 @@
-# Bangladesh GeoJSON - Administrative Boundary GIS
+# Bangladesh Administrative Boundary GIS
 
 A comprehensive Geographic Information System (GIS) built with Django for managing and visualizing the administrative boundaries of Bangladesh. This project provides detailed geographical data from the Division level down to the Union level, featuring interactive maps, data visualization, and automated data processing tools.
 

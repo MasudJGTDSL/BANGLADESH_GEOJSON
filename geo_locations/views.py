@@ -5,14 +5,34 @@ import json
 from .models import (Divisions, Districts, Upazilas, Unions,
                     GeoFeatureDistrict, GeoFeatureDivision, 
                     GeoFeatureUpazila, GeoFeatureUnion,
+                    Visitor,
                     )
                     # GeoFeatureBangladesh,
                     # GeoFeatureDistrictSmall, GeoFeatureDivisionSmall, 
                     # GeoFeatureUpazilaSmall, GeoFeatureUnionSmall,
                     # GeoFeatureAll_1,GeoFeatureAll_2
 from .chart import chart
- 
+from .utils import record_visitor
+
+# Dynamic auto-migration trigger to bypass local CLI execution issues
+_migrations_checked = False
+
+def run_auto_migrations():
+    global _migrations_checked
+    if not _migrations_checked:
+        _migrations_checked = True
+        try:
+            from django.core.management import call_command
+            # Check and run database migrations
+            call_command('makemigrations', 'geo_locations')
+            call_command('migrate', 'geo_locations')
+            print("[Auto-Migrations] Database migrated successfully.")
+        except Exception as e:
+            print(f"[Auto-Migrations] Failed to run migrations: {e}")
+
 def index(request):
+    run_auto_migrations()
+    record_visitor(request)
     divisions = Divisions.objects.all().order_by("name")
     divisions_max_area = GeoFeatureDivision.objects.order_by("-area_km2").first()
     divisions_min_area = GeoFeatureDivision.objects.order_by("area_km2").first()
@@ -182,3 +202,34 @@ def get_info(request):
         print("No matching ID found")
 
     return JsonResponse(list(data), safe=False)
+
+
+def visitor_list(request):
+    run_auto_migrations()
+    record_visitor(request)
+    visitors = Visitor.objects.all().order_by("-visit_date")
+    
+    # Calculate metadata metrics
+    total_visits = sum(v.visit_count for v in visitors)
+    unique_visitors = visitors.count()
+    
+    # Calculate top country
+    country_counts = {}
+    for v in visitors:
+        if v.country:
+            country_counts[v.country] = country_counts.get(v.country, 0) + v.visit_count
+    
+    top_country = max(country_counts, key=country_counts.get) if country_counts else "None"
+    
+    # Get last visit timestamp
+    last_visit = visitors.first().visit_date if visitors.exists() else None
+    
+    context = {
+        "visitors": visitors,
+        "total_visits": total_visits,
+        "unique_visitors": unique_visitors,
+        "top_country": top_country,
+        "last_visit": last_visit,
+    }
+    return render(request, "visitor_list.html", context)
+

@@ -1,0 +1,409 @@
+{% load static %}
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Logs & Analytics</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/map-pin.svg' %}">
+    {% tailwind_css %}
+    <link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
+    <script src="{% static 'dist/leaflet.js' %}"></script>
+    <style>
+        .font-bangla {
+            font-family: 'SolaimanLipi', 'Kalpurush', sans-serif;
+        }
+        .visitor-map {
+            height: 380px;
+            width: 100%;
+            border-radius: 12px;
+        }
+        /* Custom scrollbar for table container */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <div class="container mx-auto p-4 lg:p-6 max-w-7xl">
+        
+        <!-- Navigation Header -->
+        <div class="navbar bg-white shadow-sm border border-slate-200 rounded-2xl mb-6 px-4">
+            <div class="flex-1">
+                <a href="{% url 'geo_locations:index' %}" class="flex items-center gap-2 font-bold text-lg text-slate-800 transition hover:opacity-85">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="tracking-wide">GeoBangladesh</span>
+                        <div class="text-[10px] text-indigo-500 font-medium -mt-1 font-mono">Visitor Analytics</div>
+                    </div>
+                </a>
+            </div>
+            <div class="flex-none gap-2">
+                <a href="{% url 'geo_locations:index' %}" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-slate-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"/></svg>
+                    Map Explorer
+                </a>
+                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-primary btn-sm rounded-xl font-semibold gap-1 shadow-md shadow-indigo-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Visitor Logs
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-row items-center gap-4 transition duration-300 hover:shadow-md hover:border-slate-300">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Visits</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ total_visits }}</div>
+                </div>
+            </div>
+
+            <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-row items-center gap-4 transition duration-300 hover:shadow-md hover:border-slate-300">
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Unique Visitors</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ unique_visitors }}</div>
+                </div>
+            </div>
+
+            <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-row items-center gap-4 transition duration-300 hover:shadow-md hover:border-slate-300">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2m4-3.5a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Top Country</div>
+                    <div class="text-lg font-bold text-slate-800 truncate max-w-[170px]" id="top_country_lbl">
+                        {{ top_country }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-row items-center gap-4 transition duration-300 hover:shadow-md hover:border-slate-300">
+                <div class="p-3 bg-rose-50 text-rose-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Last Activity</div>
+                    <div class="text-sm font-bold text-slate-800 truncate max-w-[170px]">
+                        {% if last_visit %}
+                            {{ last_visit|date:"M d, Y H:i:s" }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Global Visitor Map Card -->
+        <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-4 lg:p-5 mb-6">
+            <h2 class="text-md font-bold text-slate-700 mb-3 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                Interactive Global Visitor Locations
+            </h2>
+            <div id="visitors_map" class="visitor-map border border-slate-200"></div>
+        </div>
+
+        <!-- Visitor Logs Table Card -->
+        <div class="card bg-white border border-slate-200 shadow-sm rounded-2xl p-4 lg:p-6 overflow-hidden">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Detailed Traffic Log</h2>
+                    <p class="text-xs text-slate-400">Real-time visitor logs loaded in descending order of activity date</p>
+                </div>
+                
+                <!-- Instant Search Box -->
+                <div class="relative w-full sm:w-72">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="logSearch" placeholder="Search IP, Country, City, ISP..." 
+                           class="input input-bordered input-sm w-full pl-9 pr-4 rounded-xl border-slate-300 text-xs focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 placeholder:text-slate-400 bg-slate-50 focus:bg-white transition" />
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                <table class="table table-zebra w-full table-sm text-xs" id="visitorsTable">
+                    <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                        <tr>
+                            <th class="py-3 px-4 font-semibold text-left">Visitor IP</th>
+                            <th class="py-3 px-4 font-semibold text-left">Continent</th>
+                            <th class="py-3 px-4 font-semibold text-left">Country</th>
+                            <th class="py-3 px-4 font-semibold text-left">Region</th>
+                            <th class="py-3 px-4 font-semibold text-left">City</th>
+                            <th class="py-3 px-4 font-semibold text-left">County</th>
+                            <th class="py-3 px-4 font-semibold text-left">Timezone</th>
+                            <th class="py-3 px-4 font-semibold text-left">ISP / Owner</th>
+                            <th class="py-3 px-4 font-semibold text-center">GEO Coordinates</th>
+                            <th class="py-3 px-4 font-semibold text-center">Currency</th>
+                            <th class="py-3 px-4 font-semibold text-left">Languages</th>
+                            <th class="py-3 px-4 font-semibold text-center">Visits</th>
+                            <th class="py-3 px-4 font-semibold text-left">Last Visit Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for visitor in visitors %}
+                        <tr class="hover:bg-slate-50 transition duration-150 visitor-row">
+                            <!-- IP Address -->
+                            <td class="py-3 px-4 font-mono font-bold text-indigo-700 whitespace-nowrap visitor-ip">
+                                {{ visitor.visitor_ip }}
+                            </td>
+                            <!-- Continent -->
+                            <td class="py-3 px-4 visitor-continent whitespace-nowrap">
+                                <span class="badge badge-sm badge-ghost text-[10px] font-semibold text-slate-500 rounded-lg">
+                                    {{ visitor.continent }} ({{ visitor.continent_code }})
+                                </span>
+                            </td>
+                            <!-- Country -->
+                            <td class="py-3 px-4 font-semibold text-slate-700 whitespace-nowrap visitor-country" data-ccode="{{ visitor.country_code }}">
+                                <span class="flag-icon mr-1"></span>
+                                {{ visitor.country }} ({{ visitor.country_code }})
+                            </td>
+                            <!-- Region -->
+                            <td class="py-3 px-4 text-slate-600 whitespace-nowrap visitor-region">
+                                {{ visitor.region }} {% if visitor.region_code %}({{ visitor.region_code }}){% endif %}
+                            </td>
+                            <!-- City -->
+                            <td class="py-3 px-4 font-medium text-slate-800 whitespace-nowrap visitor-city">
+                                {{ visitor.city }}
+                            </td>
+                            <!-- County -->
+                            <td class="py-3 px-4 text-slate-500 whitespace-nowrap visitor-county">
+                                {{ visitor.county|default:"-" }}
+                            </td>
+                            <!-- Timezone -->
+                            <td class="py-3 px-4 text-slate-500 font-mono text-[10px] whitespace-nowrap">
+                                {{ visitor.timezone }}
+                            </td>
+                            <!-- ISP / Owner -->
+                            <td class="py-3 px-4 text-slate-600 max-w-[150px] truncate visitor-owner" title="{{ visitor.owner }}">
+                                {{ visitor.owner }}
+                            </td>
+                            <!-- GEO Coordinates -->
+                            <td class="py-3 px-4 text-center whitespace-nowrap">
+                                {% if visitor.latitude and visitor.longitude %}
+                                    <a href="https://www.google.com/maps?q={{ visitor.latitude }},{{ visitor.longitude }}" target="_blank" 
+                                       class="btn btn-ghost btn-xs text-indigo-600 hover:bg-indigo-50 font-mono gap-1 font-normal rounded-lg px-2">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        {{ visitor.latitude|floatformat:4 }}, {{ visitor.longitude|floatformat:4 }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-slate-300">-</span>
+                                {% endif %}
+                            </td>
+                            <!-- Currency -->
+                            <td class="py-3 px-4 text-center whitespace-nowrap font-semibold text-slate-600">
+                                {{ visitor.currency|default:"-" }}
+                            </td>
+                            <!-- Languages -->
+                            <td class="py-3 px-4 text-slate-500 whitespace-nowrap" title="{{ visitor.languages }}">
+                                {{ visitor.languages|default:"-" }}
+                            </td>
+                            <!-- Visit Count -->
+                            <td class="py-3 px-4 text-center whitespace-nowrap font-bold">
+                                <span class="badge bg-indigo-50 border-indigo-200 text-indigo-700 badge-md px-3 rounded-full text-xs">
+                                    {{ visitor.visit_count }}
+                                </span>
+                            </td>
+                            <!-- Visit Date -->
+                            <td class="py-3 px-4 text-slate-500 whitespace-nowrap font-medium">
+                                {{ visitor.visit_date|date:"Y-m-d H:i:s" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="13" class="py-12 text-center text-slate-400">
+                                <div class="flex flex-col items-center justify-center gap-2">
+                                    <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                                    <span class="text-sm font-semibold">No visitor logs recorded yet</span>
+                                    <p class="text-xs text-slate-300">Visit the index map page to automatically log a test visitor</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Count Indicator -->
+            <div class="flex items-center justify-between mt-4">
+                <span class="text-xs text-slate-400" id="tableFilterCount">Showing all logs</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JavaScript code for country flag rendering, map generation, and table search -->
+    <script>
+        // JS Flag Converter (takes two letter country ISO and maps it to native flag emoji)
+        function getFlagEmoji(countryCode) {
+            if (!countryCode || countryCode === 'UN' || countryCode === 'Unknown') return '🌐';
+            const codePoints = countryCode
+                .toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt(0));
+            try {
+                return String.fromCodePoint(...codePoints);
+            } catch (err) {
+                return '🌐';
+            }
+        }
+
+        // Render emoji flags inside table country cells
+        document.querySelectorAll('td.visitor-country').forEach(cell => {
+            const countryCode = cell.getAttribute('data-ccode');
+            const flagSpan = cell.querySelector('.flag-icon');
+            if (flagSpan) {
+                flagSpan.textContent = getFlagEmoji(countryCode);
+            }
+        });
+
+        // Set Country Flag emoji on KPI label if country is matched
+        const topCountryLbl = document.getElementById('top_country_lbl');
+        if (topCountryLbl) {
+            const countryText = topCountryLbl.textContent.trim();
+            if (countryText && countryText !== 'None' && countryText !== 'Unknown') {
+                // Approximate country code extraction (e.g. Bangladesh -> BD, United States -> US)
+                // Since top_country has just name, we look in our page data to see if we can find a matching code
+                let matchedCcode = 'UN';
+                {% for v in visitors %}
+                    if ("{{ v.country }}" === countryText) {
+                        matchedCcode = "{{ v.country_code }}";
+                    }
+                {% endfor %}
+                if (matchedCcode !== 'UN') {
+                    topCountryLbl.innerHTML = `${getFlagEmoji(matchedCcode)} ${countryText}`;
+                }
+            }
+        }
+
+        // --- Leaflet Map Processing ---
+        // Parse all django visitor records into raw JS objects
+        const visitorsData = [
+            {% for visitor in visitors %}
+            {
+                ip: "{{ visitor.visitor_ip|escapejs }}",
+                city: "{{ visitor.city|escapejs }}",
+                region: "{{ visitor.region|escapejs }}",
+                country: "{{ visitor.country|escapejs }}",
+                country_code: "{{ visitor.country_code|escapejs }}",
+                lat: {{ visitor.latitude|default:0.0 }},
+                lon: {{ visitor.longitude|default:0.0 }},
+                count: {{ visitor.visit_count }},
+                date: "{{ visitor.visit_date|date:'Y-m-d H:i:s' }}"
+            },
+            {% endfor %}
+        ];
+
+        // Initialize Map
+        // Standard starting point coordinates (zoomed out)
+        var map = L.map('visitors_map').setView([23.8103, 90.4125], 3);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Track standard bounds to zoom map dynamically to show all markers
+        var bounds = [];
+
+        visitorsData.forEach(v => {
+            if (v.lat && v.lon && v.lat !== 0 && v.lon !== 0) {
+                var flag = getFlagEmoji(v.country_code);
+                var markerPopupHtml = `
+                    <div class="p-1 font-sans">
+                        <div class="font-bold text-indigo-700 text-sm mb-1">${flag} ${v.city}, ${v.country}</div>
+                        <div class="text-slate-500 font-mono text-[10px] select-all">IP: ${v.ip}</div>
+                        <div class="mt-2 pt-1.5 border-t border-slate-100 flex justify-between gap-4 text-[10px] text-slate-500">
+                            <span>Visits: <strong class="text-indigo-600 font-bold">${v.count}</strong></span>
+                            <span>Last Active: <strong class="text-slate-800">${v.date}</strong></span>
+                        </div>
+                    </div>
+                `;
+                
+                L.marker([v.lat, v.lon])
+                    .addTo(map)
+                    .bindPopup(markerPopupHtml);
+                
+                bounds.push([v.lat, v.lon]);
+            }
+        });
+
+        // Zoom map to fit all markers if any exist
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+        }
+
+        // --- Real-time Fuzzy Search Table Filter ---
+        const searchInput = document.getElementById('logSearch');
+        const rows = document.querySelectorAll('.visitor-row');
+        const filterCount = document.getElementById('tableFilterCount');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let matchedCount = 0;
+
+            rows.forEach(row => {
+                const ip = row.querySelector('.visitor-ip').textContent.toLowerCase();
+                const continent = row.querySelector('.visitor-continent').textContent.toLowerCase();
+                const country = row.querySelector('.visitor-country').textContent.toLowerCase();
+                const region = row.querySelector('.visitor-region').textContent.toLowerCase();
+                const city = row.querySelector('.visitor-city').textContent.toLowerCase();
+                const county = row.querySelector('.visitor-county').textContent.toLowerCase();
+                const owner = row.querySelector('.visitor-owner').textContent.toLowerCase();
+
+                if (ip.includes(query) || 
+                    continent.includes(query) || 
+                    country.includes(query) || 
+                    region.includes(query) || 
+                    city.includes(query) || 
+                    county.includes(query) || 
+                    owner.includes(query)) {
+                    row.style.display = '';
+                    matchedCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (query === '') {
+                filterCount.textContent = 'Showing all logs';
+            } else {
+                filterCount.textContent = `Found ${matchedCount} matching result${matchedCount === 1 ? '' : 's'}`;
+            }
+        });
+    </script>
+</body>
+</html>

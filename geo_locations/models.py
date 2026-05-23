@@ -198,3 +198,26 @@ class GeoFeatureUnion(models.Model):
 
 #     def __str__(self):
 #         return f"{self.upazila}, {self.post_office}-{self.postcode}"
+
+
+class Visitor(models.Model):
+    visitor_ip = models.GenericIPAddressField(unique=True, verbose_name="Visitor IP")
+    country = models.CharField(max_length=100, blank=True, null=True)
+    country_code = models.CharField(max_length=10, blank=True, null=True)
+    continent = models.CharField(max_length=100, blank=True, null=True)
+    continent_code = models.CharField(max_length=10, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    county = models.CharField(max_length=100, blank=True, null=True)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    region_code = models.CharField(max_length=10, blank=True, null=True)
+    timezone = models.CharField(max_length=50, blank=True, null=True)
+    owner = models.CharField(max_length=255, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    currency = models.CharField(max_length=50, blank=True, null=True)
+    languages = models.CharField(max_length=255, blank=True, null=True)
+    visit_count = models.IntegerField(default=1, verbose_name="Visit Count")
+    visit_date = models.DateTimeField(auto_now=True, verbose_name="Visit Date")
+
+    def __str__(self):
+        return f"{self.visitor_ip} ({self.country or 'Unknown'})"

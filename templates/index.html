@@ -22,10 +22,39 @@
     }
 </style>
 </head>
-<body>
-    <div class="grid lg:grid-cols-10 gap-1 w-full px-2 my-4">
-    <div class="grid lg:grid-cols-5 col-span-5 gap-1">
-    <a href="https://github.com/MasudJGTDSL/BANGLADESH_GEOJSON" target="_blank" class="p-0 flex justify-center text-gray-600 font-bold absolute top-0 right-2">
+<body class="bg-slate-50">
+    <div class="mx-auto max-w-7xl px-4 py-4">
+        <!-- Navigation Header -->
+        <div class="navbar bg-white shadow-sm border border-slate-200 rounded-2xl mb-6 px-4">
+            <div class="flex-1">
+                <a href="{% url 'geo_locations:index' %}" class="flex items-center gap-2 font-bold text-lg text-slate-800 transition hover:opacity-85">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="tracking-wide">GeoBangladesh</span>
+                        <div class="text-[10px] text-indigo-500 font-medium -mt-1 font-mono">Visitor Analytics</div>
+                    </div>
+                </a>
+            </div>
+            <div class="flex-none gap-2">
+                <a href="{% url 'geo_locations:index' %}" class="btn btn-primary btn-sm rounded-xl font-semibold gap-1 shadow-md shadow-indigo-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"/></svg>
+                    Map Explorer
+                </a>
+                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-slate-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Visitor Logs
+                </a>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-10 gap-1 w-full px-2 my-4">
+        <div class="grid lg:grid-cols-5 col-span-5 gap-1">
+        <a href="https://github.com/MasudJGTDSL/BANGLADESH_GEOJSON" target="_blank" class="p-0 flex justify-center text-gray-600 font-bold absolute top-0 right-2">
         <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3364 2.2467C6.81143 2.2467 2.33643 6.7217 2.33643 12.2467C2.33643 16.6717 5.19893 20.4092 9.17393 21.7342C9.67393 21.8217 9.86143 21.5217 9.86143 21.2592C9.86143 21.0217 9.84893 20.2342 9.84893 19.3967C7.33643 19.8592 6.68643 18.7842 6.48643 18.2217C6.37393 17.9342 5.88643 17.0467 5.46143 16.8092C5.11143 16.6217 4.61143 16.1592 5.44893 16.1467C6.23643 16.1342 6.79893 16.8717 6.98643 17.1717C7.88643 18.6842 9.32393 18.2592 9.89893 17.9967C9.98643 17.3467 10.2489 16.9092 10.5364 16.6592C8.31143 16.4092 5.98643 15.5467 5.98643 11.7217C5.98643 10.6342 6.37393 9.7342 7.01143 9.0342C6.91143 8.7842 6.56143 7.7592 7.11143 6.3842C7.11143 6.3842 7.94893 6.1217 9.86143 7.4092C10.6614 7.1842 11.5114 7.0717 12.3614 7.0717C13.2114 7.0717 14.0614 7.1842 14.8614 7.4092C16.7739 6.1092 17.6114 6.3842 17.6114 6.3842C18.1614 7.7592 17.8114 8.7842 17.7114 9.0342C18.3489 9.7342 18.7364 10.6217 18.7364 11.7217C18.7364 15.5592 16.3989 16.4092 14.1739 16.6592C14.5364 16.9717 14.8489 17.5717 14.8489 18.5092C14.8489 19.8467 14.8364 20.9217 14.8364 21.2592C14.8364 21.5217 15.0239 21.8342 15.5239 21.7342C17.5091 21.064 19.2341 19.7882 20.4562 18.0862C21.6783 16.3843 22.3359 14.342 22.3364 12.2467C22.3364 6.7217 17.8614 2.2467 12.3364 2.2467Z" fill="#71717A"/>
 </svg>Github</a>
@@ -327,5 +356,6 @@ function information(dropdownId, infoDivId,url_id, clearDiv=[]){
     information(dropdownId="upazila", infoDivId="upazila_info", url_id="upazila_id", clearDiv =["union_info"])
     information(dropdownId="union", infoDivId="union_info", url_id="union_id")
 </script>
+    </div>
 </body>
 </html>

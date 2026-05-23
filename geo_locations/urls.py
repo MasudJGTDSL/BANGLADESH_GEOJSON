@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from django.urls import path
 from . import views
 # from . views_geo_json import map_view
@@ -11,4 +12,5 @@ urlpatterns = [
     path("get_upazilas/", views.get_upazilas, name="get_upazilas"),
     path("get_unions/", views.get_unions, name="get_unions"),
     path("get_info/", views.get_info, name="get_info"),
+    path("visitors/", views.visitor_list, name="visitor_list"),
 ]
