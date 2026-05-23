@@ -3,12 +3,13 @@ from django.db.models import F, Case, When,Max, Min, Avg, Value, IntegerField, C
 from django.http import JsonResponse
 import json
 from .models import (Divisions, Districts, Upazilas, Unions,
-                     GeoFeatureBangladesh,
                     GeoFeatureDistrict, GeoFeatureDivision, 
                     GeoFeatureUpazila, GeoFeatureUnion,
-                    GeoFeatureDistrictSmall, GeoFeatureDivisionSmall, 
-                    GeoFeatureUpazilaSmall, GeoFeatureUnionSmall,
-                    GeoFeatureAll_1,GeoFeatureAll_2)
+                    )
+                    # GeoFeatureBangladesh,
+                    # GeoFeatureDistrictSmall, GeoFeatureDivisionSmall, 
+                    # GeoFeatureUpazilaSmall, GeoFeatureUnionSmall,
+                    # GeoFeatureAll_1,GeoFeatureAll_2
 from .chart import chart
  
 def index(request):

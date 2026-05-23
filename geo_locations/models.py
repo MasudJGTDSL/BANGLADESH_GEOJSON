@@ -12,7 +12,7 @@ class Divisions(models.Model):
     
     def __str__(self):
         return self.name
-    
+
     
 class Districts(models.Model):
     division = models.ForeignKey(Divisions, on_delete=models.CASCADE, related_name='district')
@@ -52,27 +52,6 @@ class Unions(models.Model):
         return f"{self.upazila}, {self.name}"
     
     
-class postcodes(models.Model):
-    upazila = models.ForeignKey(Upazilas, on_delete=models.CASCADE, related_name='postcode')
-    post_office = models.CharField(max_length=100, blank=False, null=False, default="")
-    postcode = models.CharField(max_length=100, blank=False, null=False, default="")
-
-    def __str__(self):
-        return f"{self.upazila}, {self.post_office}-{self.postcode}"
-    
-    
-class GeoFeatureBangladesh(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
-    perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
 class GeoFeatureDivision(models.Model):
     feature_id = models.IntegerField()
     name = models.CharField(max_length=100, blank=False, null=False, default="")
@@ -86,32 +65,7 @@ class GeoFeatureDivision(models.Model):
         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
     
     
-class GeoFeatureDivisionSmall(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
-    perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
 class GeoFeatureDistrict(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
-    perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
-
-class GeoFeatureDistrictSmall(models.Model):
     feature_id = models.IntegerField()
     name = models.CharField(max_length=100, blank=False, null=False, default="")
     geometry = models.JSONField()     # store the geometry dict
@@ -136,20 +90,7 @@ class GeoFeatureUpazila(models.Model):
     def __str__(self):
         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
     
-    
-class GeoFeatureUpazilaSmall(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
-    perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
-    
+
 class GeoFeatureUnion(models.Model):
     feature_id = models.IntegerField()
     name = models.CharField(max_length=100, blank=False, null=False, default="")
@@ -161,39 +102,99 @@ class GeoFeatureUnion(models.Model):
     
     def __str__(self):
         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
-    
-class GeoFeatureUnionSmall(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
-    union_id = models.IntegerField(default=0, blank=False, null=False)
-    perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
-    
-class GeoFeatureAll_1(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
-    
-    
-class GeoFeatureAll_2(models.Model):
-    feature_id = models.IntegerField()
-    name = models.CharField(max_length=100, blank=False, null=False, default="")
-    geometry = models.JSONField()     # store the geometry dict
-    properties = models.JSONField()   # store the properties dict
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+# class GeoFeatureBangladesh(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+#     area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+
+
+# class GeoFeatureDivisionSmall(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+#     area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+
+
+# class GeoFeatureDistrictSmall(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+#     area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+
+# class GeoFeatureUpazilaSmall(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+#     area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+    
+    
+# class GeoFeatureUnionSmall(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     union_id = models.IntegerField(default=0, blank=False, null=False)
+#     perimeter_km = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+#     area_km2 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+    
+    
+# class GeoFeatureAll_1(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+    
+    
+# class GeoFeatureAll_2(models.Model):
+#     feature_id = models.IntegerField()
+#     name = models.CharField(max_length=100, blank=False, null=False, default="")
+#     geometry = models.JSONField()     # store the geometry dict
+#     properties = models.JSONField()   # store the properties dict
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.properties.get("ADM4_EN", f"Feature {self.feature_id}")
+
+
+# class postcodes(models.Model):
+#     upazila = models.ForeignKey(Upazilas, on_delete=models.CASCADE, related_name='postcode')
+#     post_office = models.CharField(max_length=100, blank=False, null=False, default="")
+#     postcode = models.CharField(max_length=100, blank=False, null=False, default="")
+
+#     def __str__(self):
+#         return f"{self.upazila}, {self.post_office}-{self.postcode}"

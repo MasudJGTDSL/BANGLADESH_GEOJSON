@@ -3,12 +3,14 @@ import json
 from django.shortcuts import render
 from django.conf import settings
 
-from .models import (GeoFeatureBangladesh,
+from .models import (
                     GeoFeatureDistrict, GeoFeatureDivision, 
                     GeoFeatureUpazila, GeoFeatureUnion,
-                    GeoFeatureDistrictSmall, GeoFeatureDivisionSmall, 
-                    GeoFeatureUpazilaSmall, GeoFeatureUnionSmall,
-                    GeoFeatureAll_1,GeoFeatureAll_2)
+                    # GeoFeatureDistrictSmall, GeoFeatureDivisionSmall, 
+                    # GeoFeatureUpazilaSmall, GeoFeatureUnionSmall,
+                    # GeoFeatureAll_1,GeoFeatureAll_2
+                    # GeoFeatureBangladesh,
+                    )
 
 def map_view(request):
     # Path to your GeoJSON file
