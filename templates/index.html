@@ -1,9 +1,12 @@
+{% load static %}
 {% load static tailwind_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/map-pin.svg' %}">
 {% tailwind_css %}
 <link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
 <script src="{% static 'dist/leaflet.js' %}"></script>
