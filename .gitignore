@@ -31,6 +31,8 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+*.sqbpro
+temp.md
 
 # Installer logs
 pip-log.txt
@@ -108,6 +110,7 @@ web_old.config
 
 #! Extra ===========
 db.sqlite3
+*.sqlite3
 .env_production
 available_user.txt
 SS.json
@@ -120,6 +123,7 @@ SELF_HELP_ASSET/
 z_File_Conversion/Converted.html
 z_File_Conversion/Tobe_Convert.md
 temp.html
+BANGLADESH GEO_JSON SCRAP DATA/
 # Spyder project settings
 .spyderproject
 .spyproject

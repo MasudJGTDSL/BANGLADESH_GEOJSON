@@ -106,8 +106,9 @@ def record_visitor(request):
     try:
         # Check if visitor already exists in logs
         visitor = Visitor.objects.get(visitor_ip=ip)
-        visitor.visit_count += 1
-        visitor.save()  # auto_now=True automatically handles visit_date update
+        if visitor and ip !='118.179.146.204':
+            visitor.visit_count += 1
+            visitor.save()  # auto_now=True automatically handles visit_date update
     except Visitor.DoesNotExist:
         # Fetch geolocation details for new visitor
         geo = fetch_ip_data(ip)

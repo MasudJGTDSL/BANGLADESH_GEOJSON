@@ -54,7 +54,7 @@ def area_n_perimeter_all(file_path, output_file, name_field):
     # return result_dicts
 
 
-def export_district_feature_matches(
+def export_feature_matches(
     db_path="db.sqlite3",
     table_name="geo_locations_districts",
     json_path="bangladesh_geojson_adm2_64_districts_zillas.json",
@@ -77,7 +77,7 @@ def export_district_feature_matches(
     results = []
 
     # 4. For each row, check if point lies inside any feature polygon
-    for row in rows:
+    for row in tqdm(rows, desc="Processing Rows", unit="Row"):
         row_id, name, lat, lon = row
         point = Point(lon, lat)  # GeoJSON uses (lon, lat)
 
@@ -108,7 +108,7 @@ def export_district_feature_matches(
     print(f"✅ Exported {len(results)} matches to {output_csv}")
 
 
-def export_district_feature_matches_fast(
+def export_feature_matches_fast(
     db_path="bd.sqlite3",
     table_name="geo_locations_districts",
     json_path="bangladesh_geojson_adm2_64_districts_zillas.json",
@@ -136,7 +136,7 @@ def export_district_feature_matches_fast(
     results = []
 
     # 4. For each row, query nearby polygons via STRtree
-    for row_id, name, lat, lon in rows:
+    for row_id, name, lat, lon in tqdm(rows, desc="Processing Rows", unit="Row"):
         point = Point(lon, lat)
 
         # Candidate indices from spatial index
@@ -174,28 +174,34 @@ def export_district_feature_matches_fast(
 #! To Run: python py_geojson.py
 
 if __name__ == "__main__":
-    # export_district_feature_matches_fast(
-    # db_path="db.sqlite3",
-    # table_name="geo_locations_districts",
-    # json_path="Bangladesh_GeoJSON_Data/bangladesh_geojson_adm2_64_districts_zillas.json",
-    # output_csv="feature_matches_geo_locations_districts.csv"
-    # )
+    """ 
+    export_feature_matches_fast(
+    db_path="db.sqlite3",
+    table_name="geo_locations_districts",
+    json_path="Bangladesh_GeoJSON_Data/bangladesh_geojson_adm2_64_districts_zillas.json",
+    output_csv="feature_matches_geo_locations_districts.csv"
+    ) """
     
-    # export_district_feature_matches_fast(
-    # db_path="db.sqlite3",
-    # table_name="geo_locations_unions",
-    # json_path="Bangladesh_GeoJSON_Data/small/small_bangladesh_geojson_adm4_5160_unions_thanas.json",
-    # output_csv="feature_matches_unions.csv"
-    # )
     
-    # export_district_feature_matches(
-    # db_path="db.sqlite3",
-    # table_name="geo_locations_unions",
-    # json_path="Bangladesh_GeoJSON_Data/bangladesh_geojson_adm4_5160_unions_thanas.json",
-    # output_csv="feature_matches_unions.csv"
-    # )
+    export_feature_matches_fast(
+    db_path="db_backup.sqlite3",
+    table_name="geo_locations_unions",
+    json_path="BANGLADESH GEO_JSON SCRAP DATA/Bangladesh_GeoJSON_Data/bangladesh_geojson_adm4_5160_unions_thanas.json",
+    output_csv="feature_matches_unions_fast.csv"
+    )
+    
+    """ 
+    export_feature_matches(
+    db_path="db_backup.sqlite3",
+    table_name="geo_locations_unions",
+    json_path="BANGLADESH GEO_JSON SCRAP DATA/Bangladesh_GeoJSON_Data/bangladesh_geojson_adm4_5160_unions_thanas.json",
+    output_csv="feature_matches_unions.csv"
+    ) """
     # area_n_perimeter()
+    
+    """ 
     file_path = "Bangladesh_GeoJSON_Data/bangladesh_geojson_adm1_8_divisions_bibhags.json"
     output_file = "adm1_8_divisions.csv"
     name_field = "ADM1_EN"
-    area_n_perimeter_all(file_path, output_file, name_field)
+    area_n_perimeter_all(file_path, output_file, name_field) 
+    """

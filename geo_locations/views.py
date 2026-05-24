@@ -1,5 +1,6 @@
 # pyrefly: ignore [missing-import]
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 # pyrefly: ignore [missing-import]
 from django.db.models import F, Case, When,Max, Min, Avg, Value, IntegerField, Count, CharField, TextField, JSONField
 # pyrefly: ignore [missing-import]
@@ -208,6 +209,7 @@ def get_info(request):
     return JsonResponse(list(data), safe=False)
 
 
+@login_required
 def visitor_list(request):
     run_auto_migrations()
     record_visitor(request)

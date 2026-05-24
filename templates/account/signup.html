@@ -1,0 +1,186 @@
+{% load static %}
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - GeoBangladesh</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/map-pin.svg' %}">
+    {% tailwind_css %}
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .bg-gradient-mesh {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.05) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-mesh min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md transition-all duration-300 my-6">
+        
+        <!-- Logo Header -->
+        <div class="text-center mb-6">
+            <a href="{% url 'geo_locations:index' %}" class="inline-flex items-center gap-2.5 font-bold text-2xl text-slate-800 transition hover:opacity-85">
+                <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div class="text-left">
+                    <span class="tracking-wide text-slate-900 block leading-tight font-extrabold">GeoBangladesh</span>
+                    <span class="text-xs text-indigo-500 font-semibold font-mono block -mt-0.5">Visitor Analytics Hub</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Glassmorphic Registration Card -->
+        <div class="glass-card shadow-2xl rounded-3xl p-8 border border-slate-200 relative overflow-hidden">
+            
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-indigo-600"></div>
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-950">Create Account</h2>
+                <p class="text-sm text-slate-500 mt-1">Register to view administrative zone logs and traffic analytics</p>
+            </div>
+
+            <!-- Error Alerts -->
+            {% if form.errors or form.non_field_errors %}
+            <div class="p-4 bg-rose-50 border border-rose-200 rounded-2xl mb-5 text-sm text-rose-800 flex items-start gap-2.5 shadow-sm shadow-rose-100">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="flex-1">
+                    <span class="font-bold">Registration issues:</span>
+                    {% if form.non_field_errors %}
+                        <ul class="list-disc pl-4 mt-1 space-y-1">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="mt-1">Please correct the highlighted fields below.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Signup Form -->
+            <form class="space-y-4" method="POST" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+                
+                <!-- Username Input -->
+                <div>
+                    <label for="id_username" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </span>
+                        <input type="text" name="username" id="id_username" required placeholder="Choose a username" autofocus
+                               class="input input-bordered input-sm w-full pl-10 pr-4 py-4.5 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 bg-white/70 text-slate-800 text-sm font-medium transition" 
+                               value="{{ form.username.value|default:'' }}" />
+                    </div>
+                    {% if form.username.errors %}
+                        <p class="text-rose-500 text-[11px] mt-1 font-medium">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Email Input -->
+                <div>
+                    <label for="id_email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </span>
+                        <input type="email" name="email" id="id_email" required placeholder="Enter your email"
+                               class="input input-bordered input-sm w-full pl-10 pr-4 py-4.5 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 bg-white/70 text-slate-800 text-sm font-medium transition" 
+                               value="{{ form.email.value|default:'' }}" />
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="text-rose-500 text-[11px] mt-1 font-medium">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Password 1 Input -->
+                <div>
+                    <label for="id_password1" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </span>
+                        <input type="password" name="password1" id="id_password1" required placeholder="Create a password"
+                               class="input input-bordered input-sm w-full pl-10 pr-4 py-4.5 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 bg-white/70 text-slate-800 text-sm font-medium transition" />
+                    </div>
+                    {% if form.password1.errors %}
+                        <p class="text-rose-500 text-[11px] mt-1 font-medium">{{ form.password1.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Password 2 Input -->
+                <div>
+                    <label for="id_password2" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Confirm Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </span>
+                        <input type="password" name="password2" id="id_password2" required placeholder="Repeat the password"
+                               class="input input-bordered input-sm w-full pl-10 pr-4 py-4.5 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 bg-white/70 text-slate-800 text-sm font-medium transition" />
+                    </div>
+                    {% if form.password2.errors %}
+                        <p class="text-rose-500 text-[11px] mt-1 font-medium">{{ form.password2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-full py-3.5 rounded-2xl font-bold text-sm tracking-wide shadow-lg shadow-indigo-100 mt-4 transition duration-200">
+                    Sign Up Account
+                </button>
+
+            </form>
+
+            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <p class="text-sm text-slate-500">
+                    Already registered? 
+                    <a href="{% url 'account_login' %}" class="text-indigo-600 font-bold hover:underline ml-1">Sign in instead</a>
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Secondary Home Link -->
+        <div class="text-center mt-6">
+            <a href="{% url 'geo_locations:index' %}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Map Explorer
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>
