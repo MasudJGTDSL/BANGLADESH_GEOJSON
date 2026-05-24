@@ -17,7 +17,7 @@ except ImportError:
 # pyrefly: ignore [missing-import]
 from dotenv import dotenv_values, load_dotenv
 config = {**dotenv_values(".env")} 
-
+SECRET_KEY = config["SECRET_KEY"]
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_r5oh%e&by*-%$9qdmt%r#aaj8+e(15c^vm23#oqqh5b#&^6p-'
+# SECRET_KEY = 'django-insecure-_r5oh%e&by*-%$9qdmt%r#aaj8+e(15c^vm23#oqqh5b#&^6p-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(config["DEBUG"])
