@@ -222,4 +222,4 @@ class Visitor(models.Model):
     visit_date = models.DateTimeField(auto_now=True, verbose_name="Visit Date")
 
     def __str__(self):
-        return f"{self.visitor_ip} ({self.country or 'Unknown'})"
+        return f"{self.visitor_ip} ({self.country or '--'})"
