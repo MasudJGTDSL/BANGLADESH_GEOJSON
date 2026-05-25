@@ -201,7 +201,8 @@
                             <!-- Country -->
                             <td class="py-2 px-1 font-semibold text-slate-700 whitespace-nowrap visitor-country" data-ccode="{{ visitor.country_code }}">
                                 <span class="flag-icon mr-1"></span>
-                                {{ visitor.country }} ({{ visitor.country_code }})
+                                {% comment %} {{ visitor.country }}  {% endcomment %}
+                                ({{ visitor.country_code }})
                             </td>
                             <!-- Region -->
                             <td class="py-2 px-1 text-slate-600 whitespace-nowrap visitor-region">
@@ -250,7 +251,7 @@
                                 </span>
                             </td>
                             <!-- Visit Date -->
-                            <td class="py-2 px-1 text-slate-500 whitespace-nowrap font-medium">
+                            <td class="py-2 px-1 text-slate-500 whitespace-nowrap font-mono text-[10px]">
                                 {{ visitor.visit_date|date:"d M Y H:i:s" }}
                             </td>
                         </tr>
