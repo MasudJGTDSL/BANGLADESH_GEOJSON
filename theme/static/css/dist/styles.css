@@ -3393,6 +3393,9 @@
   .text-\[11px\] {
     font-size: 11px;
   }
+  .text-\[12px\] {
+    font-size: 12px;
+  }
   .leading-normal {
     --tw-leading: var(--leading-normal);
     line-height: var(--leading-normal);
@@ -3452,6 +3455,18 @@
       color: var(--color-primary-content);
       --input-color: var(--color-primary);
     }
+  }
+  .text-\[1\] {
+    color: 1;
+  }
+  .text-\[12\] {
+    color: 12;
+  }
+  .text-\[12p\] {
+    color: 12p;
+  }
+  .text-\[13\] {
+    color: 13;
   }
   .text-amber-600 {
     color: var(--color-amber-600);
