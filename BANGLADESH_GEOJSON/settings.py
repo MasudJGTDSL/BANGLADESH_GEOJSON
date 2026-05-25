@@ -31,12 +31,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(config["DEBUG"])
 # Security and CSRF Settings
-ALLOWED_HOSTS = config["ALLOWED_HOSTS"].split(" ")
+ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", "localhost 127.0.0.1 *").split(" ")
 CSRF_TRUSTED_ORIGINS = [f"http://{host}" for host in ALLOWED_HOSTS if host != "*"]
 CSRF_TRUSTED_ORIGINS += [f"https://{host}" for host in ALLOWED_HOSTS if host != "*"]
+# CSRF_TRUSTED_ORIGINS += ["http://localhost:8000", "http://127.0.0.1:8000", "http://0.0.0.0:8000"]
 
 # Handle proxy-terminated SSL
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# CSRF and Session Robustness
+CSRF_USE_SESSIONS = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = False # Set to True in production with HTTPS
+
+# Logging Configuration
+
 
 # Application definition
 
@@ -76,13 +89,13 @@ INTERNAL_IPS = ["127.0.0.1"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
 if DEBUG:
