@@ -186,8 +186,8 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_ADAPTER = 'geo_locations.adapters.NoSignupAdapter'
 
 #! Extra settings.py
-# USE_X_FORWARDED_HOST = True
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # If using django-ipware or similar:
 IPWARE_PROXY_COUNT = 1  # number of proxies in front
