@@ -23,7 +23,7 @@ def fetch_ip_data(ip):
     is_local = False
     
     # Check for private or loopback IPs
-    if ip in ('127.0.0.1', 'localhost', '::1') or ip.startswith('192.168.') or ip.startswith('10.') or ip.startswith('172.16.') or ip.startswith('169.254.'):
+    if ip in ('127.0.0.1', 'localhost', '::1', '118.179.146.204') or ip.startswith('192.168.') or ip.startswith('10.') or ip.startswith('172.16.') or ip.startswith('169.254.'):
         is_local = True
         # Use a realistic public IP from Dhaka, Bangladesh for local testing and demo
         ip = '103.150.134.12'
@@ -106,9 +106,8 @@ def record_visitor(request):
     try:
         # Check if visitor already exists in logs
         visitor = Visitor.objects.get(visitor_ip=ip)
-        if visitor and ip !='118.179.146.204':
-            visitor.visit_count += 1
-            visitor.save()  # auto_now=True automatically handles visit_date update
+        visitor.visit_count += 1
+        visitor.save()  # auto_now=True automatically handles visit_date update
     except Visitor.DoesNotExist:
         # Fetch geolocation details for new visitor
         geo = fetch_ip_data(ip)
