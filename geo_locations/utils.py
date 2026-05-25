@@ -2,6 +2,7 @@ import requests
 # pyrefly: ignore [missing-import]
 from django.utils import timezone
 from .models import Visitor
+from user_agents import parse
 
 def get_client_ip(request):
     """
@@ -13,6 +14,20 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def get_device_info(request):
+    """
+    Extract device and browser info from the request's User-Agent header.
+    """
+    ua_string = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = parse(ua_string)
+    
+    # Get device family and OS
+    device = f"{user_agent.device.family} ({user_agent.os.family} {user_agent.os.version_string})"
+    # Get browser family and version
+    browser = f"{user_agent.browser.family} {user_agent.browser.version_string}"
+    
+    return device, browser
 
 def fetch_ip_data(ip):
     """
@@ -102,10 +117,13 @@ def record_visitor(request):
         return
 
     ip = get_client_ip(request)
+    device, browser = get_device_info(request)
 
     try:
         # Check if visitor already exists in logs
         visitor = Visitor.objects.get(visitor_ip=ip)
+        visitor.device = device
+        visitor.browser = browser
         if ip != '118.179.146.204':
             visitor.visit_count += 1
             visitor.save()  # auto_now=True automatically handles visit_date update
@@ -129,6 +147,8 @@ def record_visitor(request):
                 longitude=geo['longitude'],
                 currency=geo['currency'],
                 languages=geo['languages'],
+                device=device,
+                browser=browser,
                 visit_count=1
             )
         except Exception as e:

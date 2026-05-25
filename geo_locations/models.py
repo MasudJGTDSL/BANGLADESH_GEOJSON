@@ -217,6 +217,8 @@ class Visitor(models.Model):
     currency = models.CharField(max_length=50, blank=True, null=True)
     languages = models.CharField(max_length=255, blank=True, null=True)
     visit_count = models.IntegerField(default=1, verbose_name="Visit Count")
+    device = models.CharField(max_length=255, blank=True, null=True, verbose_name="Device")
+    browser = models.CharField(max_length=255, blank=True, null=True, verbose_name="Browser")
     visit_date = models.DateTimeField(auto_now=True, verbose_name="Visit Date")
 
     def __str__(self):
