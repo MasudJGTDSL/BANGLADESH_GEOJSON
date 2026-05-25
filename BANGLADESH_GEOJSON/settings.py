@@ -186,4 +186,5 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_ADAPTER = 'geo_locations.adapters.NoSignupAdapter'
 
 
-
+if int(config["LOGGING"]) == 1:
+    from .logging import LOGGING
