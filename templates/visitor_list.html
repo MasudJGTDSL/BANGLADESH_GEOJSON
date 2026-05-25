@@ -179,7 +179,7 @@
                             <th class="py-2 px-1 font-semibold text-left">Timezone</th>
                             <th class="py-2 px-1 font-semibold text-left">ISP / Owner</th>
                             <th class="py-2 px-1 font-semibold text-center"><img src="{% static 'images/map-pin.svg' %}" width="20px" alt="google"></th>
-                            <th class="py-2 px-1 font-semibold text-center">Currency</th>
+                            <th class="py-2 px-1 font-semibold text-center">Cur.</th>
                             <th class="py-2 px-1 font-semibold text-left">Languages</th>
                             <th class="py-2 px-1 font-semibold text-center">Visits</th>
                             <th class="py-2 px-1 font-semibold text-left">Visit Date</th>
@@ -242,7 +242,7 @@
                             </td>
                             <!-- Languages -->
                             <td class="py-2 px-1 text-slate-500 whitespace-nowrap font-mono text-[10px]" title="{{ visitor.languages }}">
-                                {{ visitor.languages|default:"-" }}
+                                {{ visitor.languages|truncatechars:10|default:"-" }}
                             </td>
                             <!-- Visit Count -->
                             <td class="py-2 px-1 text-center whitespace-nowrap font-bold">
