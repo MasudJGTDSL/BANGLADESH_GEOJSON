@@ -178,7 +178,7 @@
                             {% comment %} <th class="py-2 px-1 font-semibold text-left">County</th> {% endcomment %}
                             <th class="py-2 px-1 font-semibold text-left">Timezone</th>
                             <th class="py-2 px-1 font-semibold text-left">ISP / Owner</th>
-                            <th class="py-2 px-1 font-semibold text-center">Location</th>
+                            <th class="py-2 px-1 font-semibold text-center"><img src="{% static 'images/map-pin.svg' %} width=20px" alt="google"></th>
                             <th class="py-2 px-1 font-semibold text-center">Currency</th>
                             <th class="py-2 px-1 font-semibold text-left">Languages</th>
                             <th class="py-2 px-1 font-semibold text-center">Visits</th>
@@ -201,8 +201,8 @@
                             <!-- Country -->
                             <td class="py-2 px-1 font-semibold text-slate-700 whitespace-nowrap visitor-country" data-ccode="{{ visitor.country_code }}">
                                 <span class="flag-icon mr-1"></span>
-                                {% comment %} {{ visitor.country }}  {% endcomment %}
-                                ({{ visitor.country_code }})
+                                {{ visitor.country }} 
+                                {% comment %} ({{ visitor.country_code }}) {% endcomment %}
                             </td>
                             <!-- Region -->
                             <td class="py-2 px-1 text-slate-600 whitespace-nowrap visitor-region">
@@ -241,7 +241,7 @@
                                 {{ visitor.currency|default:"-" }}
                             </td>
                             <!-- Languages -->
-                            <td class="py-2 px-1 text-slate-500 whitespace-nowrap" title="{{ visitor.languages }}">
+                            <td class="py-2 px-1 text-slate-500 whitespace-nowrap font-mono text-[10px]" title="{{ visitor.languages }}">
                                 {{ visitor.languages|default:"-" }}
                             </td>
                             <!-- Visit Count -->
