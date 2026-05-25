@@ -204,6 +204,19 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_ADAPTER = 'geo_locations.adapters.NoSignupAdapter'
 
+# settings.py
+
+# Crucial: This tells allauth to accept both username AND email
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+# Required: Users must provide an email when signing up
+ACCOUNT_EMAIL_REQUIRED = True
+
+# Optional but Recommended: Ensures emails are unique across the platform
+ACCOUNT_UNIQUE_EMAIL = True
+
+# Optional: Set to True if you want users to have a username
+ACCOUNT_USERNAME_REQUIRED = True
 
 
 if int(config["LOGGING"]) == 1:
