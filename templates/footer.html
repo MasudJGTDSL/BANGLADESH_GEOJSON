@@ -3,31 +3,45 @@
 Start Footer
 ================================= -->
 <footer class="sticky-bottom">
-    <div class="footerCol">
-        <div class="container">
-            <ul class="socialCol">
-                <li><a href="https://www.facebook.com/mahimsoft"><img src="{% static 'images/fb.svg' %}" alt="..."></a>
-                </li>
-                <li><a href="javascript:void(0)"><img src="{% static 'images/insta.svg' %}" alt="..."></a>
-                </li>
-                <li><a href="javascript:void(0)"><img src="{% static 'images/twitter.svg' %}" alt="..."></a></li>
-                <li><a href="https://www.linkedin.com/in/masud-zaman-8b828749" target="_blank"><img
-                            src="{% static 'images/linkedin.svg' %}" alt="..."></a></li>
-                <li><a href="https://github.com/masudJGTDSL" target="_blank"><img src="{% static 'images/git.png' %}"
-                            alt="..."></a></li>
 
-            </ul> 
-            <div class="copyrightCol">
-                <div class="flex justify-center p-0 ps-2 ms-2 me-0" style="width:100%;">
-                    <div class="footer1 footer2 p-2">&copy; {% now 'Y' %} 
-                        <a href="https://mahimsoft.com.bd/" target="_blank">Mahim Soft</a>
-                    </div>
-                    {% comment %} <div class="p-2"><i class="bu bi-people-fill"></i> {{visitor_count}} | {{unique_visitor_count}} {% endcomment %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            <div class="bg-base-200 py-6">
+  <!-- Social Icons -->
+  <ul class="flex justify-center space-x-4 mb-4">
+    <li>
+      <a href="https://www.facebook.com/mahimsoft" class="btn btn-circle btn-ghost">
+        <img src="{% static 'images/fb.svg' %}" alt="Facebook" class="h-5 w-5" />
+      </a>
+    </li>
+    <li>
+      <a href="javascript:void(0)" class="btn btn-circle btn-ghost">
+        <img src="{% static 'images/insta.svg' %}" alt="Instagram" class="h-5 w-5" />
+      </a>
+    </li>
+    <li>
+      <a href="javascript:void(0)" class="btn btn-circle btn-ghost">
+        <img src="{% static 'images/twitter.svg' %}" alt="Twitter" class="h-5 w-5" />
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/masud-zaman-8b828749" target="_blank" class="btn btn-circle btn-ghost">
+        <img src="{% static 'images/linkedin.svg' %}" alt="LinkedIn" class="h-5 w-5" />
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/masudJGTDSL" target="_blank" class="btn btn-circle btn-ghost">
+        <img src="{% static 'images/git.png' %}" alt="GitHub" class="h-5 w-5" />
+      </a>
+    </li>
+  </ul>
+
+  <!-- Copyright -->
+  <div class="text-center text-sm text-gray-600">
+    &copy; {% now 'Y' %} 
+    <a href="https://mahimsoft.com.bd/" target="_blank" class="link link-hover text-primary">
+      Mahim Soft
+    </a>
+  </div>
+</div>
 </footer>
 <!-- ================================
 End Footer

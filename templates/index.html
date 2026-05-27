@@ -2,409 +2,689 @@
 {% load static tailwind_tags %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoBangladesh - Administrative Zone Explorer & Spatial Analytics</title>
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/map-pin.svg' %}">
-{% tailwind_css %}
-<link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
-<script src="{% static 'dist/leaflet.js' %}"></script>
-<!-- <script src="{% static 'dist/turf.min.js' %}"></script> -->
-<style>
-    .bangla {
-        font-family: 'Kalpurush', 'SolaimanLipi', 'BanglaFontNikosh'; letter-spacing: 0.05em; word-spacing: 0.15em;
-    }
-    .leaflet-container {
-        height: 400px;
-        width: 100%;
-        border-radius: 8px;
-    }
-    /* footer */
-.footerCol {
-  padding: 50px 0;
-  text-align: center;
-}
-.socialCol li {
-  display: inline-block;
-}
-.socialCol li + li {
-  padding-left: 35px;
-}
-.socialCol img {
-  max-width: 30px;
-  max-height: 30px;
-  -o-object-fit: contain;
-  object-fit: contain;
-}
-.copyrightCol {
-	padding: 20px 0 0;
-  font-size: 14px;
-}
-.copyrightCol p {
-	margin: 0;
-}
-</style>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    {% tailwind_css %}
+    <link rel="stylesheet" href="{% static 'dist/leaflet.css' %}">
+    <script src="{% static 'dist/leaflet.js' %}"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .bangla {
+            font-family: 'Hind Siliguri', 'Kalpurush', 'SolaimanLipi', sans-serif;
+        }
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+            border-radius: 1rem;
+            background-color: #f1f5f9;
+        }
+        /* Custom Scrollbar for Details Panel */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Leaflet Control Layer Styling overrides */
+        .leaflet-control-layers {
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
+            border-radius: 0.75rem !important;
+            padding: 6px 10px !important;
+            font-family: inherit !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+        }
+        .leaflet-bar {
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
+            border-radius: 0.75rem !important;
+            overflow: hidden;
+        }
+        .leaflet-bar a {
+            border-bottom: 1px solid #f1f5f9 !important;
+            color: #475569 !important;
+        }
+        .leaflet-bar a:hover {
+            background-color: #f8fafc !important;
+            color: #6366f1 !important;
+        }
+        /* Premium custom animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
 </head>
-<body class="bg-slate-50">
-    <div class="mx-auto max-w-7xl px-3 py-4">
-        <!-- Navigation Header -->
-        <div class="navbar bg-white shadow-sm border border-slate-200 rounded-xl mx-auto px-3">
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    <div class="mx-auto max-w-7xl px-4 py-4 w-full flex-grow flex flex-col gap-2">
+        
+        <!-- Premium Navigation Header -->
+        <header class="navbar bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-sm shadow-slate-100/50 rounded-2xl mx-auto px-4 py-2 z-[999]">
             <div class="flex-1">
-                <a href="{% url 'geo_locations:index' %}" class="flex items-center gap-2 font-bold text-lg text-slate-800 transition hover:opacity-85">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                <a href="{% url 'geo_locations:index' %}" class="flex items-center gap-2.5 transition-all duration-300 hover:opacity-90 group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-200 transition-all duration-300 group-hover:scale-105">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
                     <div>
-                        <span class="tracking-wide">GeoBangladesh</span>
-                        <div class="text-[10px] text-indigo-500 font-medium -mt-1 font-mono">Visitor Analytics</div>
+                        <span class="tracking-tight font-extrabold text-slate-800 text-base">GeoBangladesh</span>
+                        <div class="text-[9px] text-indigo-600 font-bold -mt-1 font-mono uppercase tracking-wider flex items-center gap-1">
+                            Spatial Analytics
+                            <span class="w-1 h-1 rounded-full bg-indigo-500 animate-pulse"></span>
+                        </div>
                     </div>
                 </a>
             </div>
-            <div class="flex-none flex items-center gap-2">
-                 <a href="https://github.com/MasudJGTDSL/BANGLADESH_GEOJSON" target="_blank" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-slate-600 hover:text-indigo-600 transition">
-        <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3364 2.2467C6.81143 2.2467 2.33643 6.7217 2.33643 12.2467C2.33643 16.6717 5.19893 20.4092 9.17393 21.7342C9.67393 21.8217 9.86143 21.5217 9.86143 21.2592C9.86143 21.0217 9.84893 20.2342 9.84893 19.3967C7.33643 19.8592 6.68643 18.7842 6.48643 18.2217C6.37393 17.9342 5.88643 17.0467 5.46143 16.8092C5.11143 16.6217 4.61143 16.1592 5.44893 16.1467C6.23643 16.1342 6.79893 16.8717 6.98643 17.1717C7.88643 18.6842 9.32393 18.2592 9.89893 17.9967C9.98643 17.3467 10.2489 16.9092 10.5364 16.6592C8.31143 16.4092 5.98643 15.5467 5.98643 11.7217C5.98643 10.6342 6.37393 9.7342 7.01143 9.0342C6.91143 8.7842 6.56143 7.7592 7.11143 6.3842C7.11143 6.3842 7.94893 6.1217 9.86143 7.4092C10.6614 7.1842 11.5114 7.0717 12.3614 7.0717C13.2114 7.0717 14.0614 7.1842 14.8614 7.4092C16.7739 6.1092 17.6114 6.3842 17.6114 6.3842C18.1614 7.7592 17.8114 8.7842 17.7114 9.0342C18.3489 9.7342 18.7364 10.6217 18.7364 11.7217C18.7364 15.5592 16.3989 16.4092 14.1739 16.6592C14.5364 16.9717 14.8489 17.5717 14.8489 18.5092C14.8489 19.8467 14.8364 20.9217 14.8364 21.2592C14.8364 21.5217 15.0239 21.8342 15.5239 21.7342C17.5091 21.064 19.2341 19.7882 20.4562 18.0862C21.6783 16.3843 22.3359 14.342 22.3364 12.2467C22.3364 6.7217 17.8614 2.2467 12.3364 2.2467Z" fill="#71717A"/>
-</svg>Github</a>
-                <a href="{% url 'geo_locations:index' %}" class="btn btn-primary btn-sm rounded-xl font-semibold gap-1 shadow-md shadow-indigo-100">
+            
+            <div class="flex-none flex items-center gap-1.5">
+                <a href="https://github.com/MasudJGTDSL/BANGLADESH_GEOJSON" target="_blank" class="btn btn-ghost btn-sm rounded-xl font-bold gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
+                    <svg width="18" height="18" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-[1.5]">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3364 2.2467C6.81143 2.2467 2.33643 6.7217 2.33643 12.2467C2.33643 16.6717 5.19893 20.4092 9.17393 21.7342C9.67393 21.8217 9.86143 21.5217 9.86143 21.2592C9.86143 21.0217 9.84893 20.2342 9.84893 19.3967C7.33643 19.8592 6.68643 18.7842 6.48643 18.2217C6.37393 17.9342 5.88643 17.0467 5.46143 16.8092C5.11143 16.6217 4.61143 16.1592 5.44893 16.1467C6.23643 16.1342 6.79893 16.8717 6.98643 17.1717C7.88643 18.6842 9.32393 18.2592 9.89893 17.9967C9.98643 17.3467 10.2489 16.9092 10.5364 16.6592C8.31143 16.4092 5.98643 15.5467 5.98643 11.7217C5.98643 10.6342 6.37393 9.7342 7.01143 9.0342C6.91143 8.7842 6.56143 7.7592 7.11143 6.3842C7.11143 6.3842 7.94893 6.1217 9.86143 7.4092C10.6614 7.1842 11.5114 7.0717 12.3614 7.0717C13.2114 7.0717 14.0614 7.1842 14.8614 7.4092C16.7739 6.1092 17.6114 6.3842 17.6114 6.3842C18.1614 7.7592 17.8114 8.7842 17.7114 9.0342C18.3489 9.7342 18.7364 10.6217 18.7364 11.7217C18.7364 15.5592 16.3989 16.4092 14.1739 16.6592C14.5364 16.9717 14.8489 17.5717 14.8489 18.5092C14.8489 19.8467 14.8364 20.9217 14.8364 21.2592C14.8364 21.5217 15.0239 21.8342 15.5239 21.7342C17.5091 21.064 19.2341 19.7882 20.4562 18.0862C21.6783 16.3843 22.3359 14.342 22.3364 12.2467C22.3364 6.7217 17.8614 2.2467 12.3364 2.2467Z" fill="currentColor"/>
+                    </svg>
+                    GitHub
+                </a>
+                
+                <a href="{% url 'geo_locations:index' %}" class="btn btn-ghost btn-sm rounded-xl font-bold gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"/></svg>
-                    Map Explorer
+                    Explorer
                 </a>
                 
                 {% if user.is_authenticated %}
-                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-slate-600 hover:text-indigo-600 transition">
+                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-ghost btn-sm rounded-xl font-bold gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Visitor Logs
                 </a>
                 <div class="h-5 w-[1px] bg-slate-200 mx-1"></div>
-                <span class="text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 font-mono select-none">
+                <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl px-2.5 py-1 flex items-center gap-1 font-mono select-none">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     {{ user.username|capfirst }}
                 </span>
-                <a href="{% url 'account_logout' %}" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-rose-600 hover:bg-rose-50 transition">
+                <a href="{% url 'account_logout' %}" class="btn btn-ghost btn-sm rounded-xl font-bold gap-1 text-rose-600 hover:bg-rose-50 transition-all duration-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     Log Out
                 </a>
                 {% else %}
-                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-ghost btn-sm rounded-xl font-semibold gap-1 text-slate-500 hover:text-indigo-600 transition" title="Authentication required to view visitor logs">
+                <a href="{% url 'geo_locations:visitor_list' %}" class="btn btn-ghost btn-sm rounded-xl font-bold gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200" title="Authentication required to view visitor logs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                     Visitor Logs
                 </a>
                 <div class="h-5 w-[1px] bg-slate-200 mx-1"></div>
-                <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm rounded-xl font-semibold gap-1 shadow-md shadow-indigo-100 transition">
+                <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm rounded-xl font-bold gap-1 shadow-md shadow-indigo-100 bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700 transition-all duration-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     Log In
                 </a>
                 {% endif %}
-               
             </div>
-        </div>
+        </header>
 
-        <div class="grid lg:grid-cols-10 gap-1 w-full px-0 my-4">
-        <div class="grid lg:grid-cols-5 col-span-5 gap-1">
-        
-    <h1 class="flex justify-center col-span-5 text-2xl items-center font-bold bg-gray-300 text-center border border-gray-400 rounded-md my-2 py-1">Administrative Zone Information</h1>
+        <!-- Main Grid Layout matching original 10-columns structure -->
+        <div class="grid lg:grid-cols-10 gap-2 w-full px-0 mt-0 mb-2 items-start">
+            
+            <!-- Left Column: col-span-5 containing both selectors and details -->
+            <!-- Main Header inside grid spanning 5 columns -->
+                <div class="col-span-10 text-center mb-4">
+                    <h1 class="text-2xl text-center font-bold text-slate-700 tracking-tight">
+                        Bangladesh GIS Dashboard
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium">Explore divisions, districts, upazilas and unions with
+                        live interactive metrics</p>
+                </div>
+            <!-- <h1 class="flex justify-center col-span-10 text-lg items-center font-extrabold bg-white text-slate-800 border border-slate-200/80 rounded-xl my-0 py-1.5 px-4 shadow-sm shadow-slate-100/50">
+                Administrative Zone Information
+            </h1> -->
+            <div class="grid lg:grid-cols-5 col-span-5 gap-2">
+                
 
-<fieldset class="fieldset col-span-2 bg-base-200 border-gray-400 rounded-box border p-4">        
-<legend class="fieldset-legend bg-gray-300 text-gray-600 px-2 py-0 rounded-sm text-md">Select for Information</legend>
-    <form method="GET">
-    <select id="division" class="select select-neutral py-2 mb-4">
-    <option disabled selected value="">Select Division</option>
-    {% for division in divisions %}
-        <option value="{{ division.id }}">{{ division.name }}</option>
-    {% endfor %}
-    </select>
+                <!-- Select Filters Panel: col-span-2 -->
+                <div class="col-span-2 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm shadow-slate-100/30 relative overflow-hidden flex flex-col gap-3 min-h-[350px]">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+           <div class="flex items-center text-[9px] gap-2.5 mb-0 mt-0">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-[12px]">Hierarchy Filter</h3>
+                            <p class="text-[8px] text-slate-400 font-semibold uppercase tracking-wider">Select
+                                Administrative Level</p>
+                        </div>
+                    </div>
+                    <!-- <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Select for Information</span> -->
+                    
+                    <form method="GET" class="flex flex-col gap-3">
+                        <select id="division" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-2.5 text-xs font-semibold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat pr-8">
+                            <option disabled selected value="">Select Division</option>
+                            {% for division in divisions %}
+                                <option value="{{ division.id }}">{{ division.name }}</option>
+                            {% endfor %}
+                        </select>
 
-    <select id="district" class="select select-neutral py-2 mb-4">
-        <option disabled selected value="">Select District</option>
-    </select>
-    <a href="" target="_blank"></a>
-    <select id="upazila" class="select select-neutral py-2 mb-4">
-        <option disabled selected value="">Select Upazila</option>
-    </select>
+                        <select id="district" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-2.5 text-xs font-semibold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat pr-8">
+                            <option disabled selected value="">Select District</option>
+                        </select>
 
-    <select id="union" class="select select-neutral py-2 mb-0">
-        <option disabled selected value="">Select Union</option>
-    </select>
-    </form>
-</fieldset>
-<fieldset class="fieldset col-span-3 mx-0 bg-base-200 border-gray-400 rounded-box border mt-2 px-2 pt-3">
-    {% comment %} <legend class="fieldset-legend bg-gray-300 text-gray-600 px-2 py-0 rounded-md text-lg">Details Information</legend> {% endcomment %}
-    <div id="division_info" class="w-full mt-0"></div>
-    <div id="district_info" class="w-full mt-0"></div>
-    <div id="upazila_info" class="w-full mt-0"></div>
-    <div id="union_info" class="w-full mt-0"></div>
-</fieldset>
+                        <select id="upazila" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-2.5 text-xs font-semibold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat pr-8">
+                            <option disabled selected value="">Select Upazila</option>
+                        </select>
 
-</div>
-<div id="main_map" class="col-span-5 mt-2 mx-auto"></div>
-</div>
-<div class="grid lg:grid-cols-3 border-1 border-gray-500 mx-0 gap-1 p-2 overflow-x-auto">
-
-        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
-    
-    <table class="table border-gray-300 table-sm">
-        <thead>
-            <tr><th colspan="3" class="border border-blue-600 text-lg text-gray-200 bg-blue-600 text-center font-bold py-1 my-0">Divisions Information</th></tr>
-            <tr class="text-center">
-                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{divisions_info.large_division.name}}</td>
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{divisions_info.small_division.name}}</td>
-                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{divisions_info.average_division.avg_area|floatformat:"2g"}} Km²</td>
-            </tr>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold">{{divisions_info.large_division.area_km2|floatformat:"2g"}} Km²</td>
-                <td class="border border-gray-300 text-md font-bold">{{divisions_info.small_division.area_km2|floatformat:"2g"}} Km²</td>
-            </tr>
-        </tbody>
-    </table>
-
-
-        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
-    
-    <table class="table table-zebra table-bordered table-bordered table-sm">
-        <thead>
-            <tr><td colspan="3" class="border border-amber-600 text-lg text-gray-200 bg-amber-600 text-center font-bold py-1 my-0">Districts Information</td></tr>
-            <tr class="text-center">
-                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{districts_info.large_district.name}}, {{districts_info.large_district.properties.ADM1_EN}}</td>
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{districts_info.small_district.name}}, {{districts_info.small_district.properties.ADM1_EN}}</td>
-                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{districts_info.average_district.avg_area|floatformat:"2g"}} Km²</td>
-            </tr>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold">{{districts_info.large_district.area_km2|floatformat:"2g"}} Km²</td>
-                <td class="border border-gray-300 text-md font-bold">{{districts_info.small_district.area_km2|floatformat:"2g"}} Km²</td>
-            </tr>
-        </tbody>
-    </table>
-
-        <!--"districts_info":districts_info,"upazilas_info":upazilas_info, -->
-    
-    <table class="table table-zebra table-bordered table-bordered table-sm">
-        <thead>
-            <tr><td colspan="3" class="border border-emerald-600 text-lg text-gray-200 bg-emerald-600 text-center font-bold py-1 my-0">Upazila Information</td></tr>
-            <tr class="text-center">
-                <th class="border border-gray-300">Largest</th><th class="border border-gray-300">Smallest</th><th class="border border-gray-300">Average Area</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{upazilas_info.large_upazila.name}}, {{upazilas_info.large_upazila.properties.ADM3_EN}}, {{upazilas_info.large_upazila.properties.ADM2_EN}}</td>
-                <td class="border border-gray-300 text-md font-bold text-gray-600">{{upazilas_info.small_upazila.name}}, {{upazilas_info.small_upazila.properties.ADM3_EN}}, {{upazilas_info.small_upazila.properties.ADM2_EN}}</td>
-                <td rowspan="2" class="border border-gray-300 text-md font-bold">{{upazilas_info.average_upazila.avg_area|floatformat:"2g"}} Km²</td>
-            </tr>
-            <tr class="text-center">
-                <td class="border border-gray-300 text-md font-bold">{{upazilas_info.large_upazila.area_km2|floatformat:"2g"}} Km²</td>
-                <td class="border border-gray-300 text-md font-bold">{{upazilas_info.small_upazila.area_km2|floatformat:"2g"}} Km²</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="py-2 mx-0 w-full">
-    <div class="border-1 border-gray-600 rounded-md p-3">
-        {{ chart_division|safe }}
-    </div>
-</div>
-
-<div class="py-2 mx-0 w-full">
-    <div class="border-1 border-gray-600 rounded-md p-3">
-        {{ chart_districts|safe }}
-    </div>
-</div>
- <div>{% include 'footer.html' %}</div>
-<script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
-    <script>
-function setupDependentDropdown(parentId, childId, url, paramName = "id", itemName="option", resetIds = []) {
-    const parentDropdown = document.getElementById(parentId);
-    const childDropdown = document.getElementById(childId);
-
-    parentDropdown.addEventListener("change", function () {
-        const parentValue = this.value;
-
-        // ✅ Reset child dropdown
-        childDropdown.innerHTML = `<option value="">Select ${itemName[0]}</option>`;
-
-        // ✅ Reset all deeper children
-        let i = 1;
-        resetIds.forEach(id => {
-            const deeperDropdown = document.getElementById(id);
-        if (deeperDropdown) {
-                deeperDropdown.innerHTML = `<option value="">Select ${itemName[i]}</option>`;
-            }
-            i+=1;
-        }
-        );
-
-        // ✅ Populate immediate child if parent has value
-        if (parentValue) {
-            fetch(`${url}?${paramName}=${parentValue}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.id;
-                        option.textContent = item.name;
-                        childDropdown.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading dropdown:", error);
-                });
-        }
-    });
-}
-</script>
-
-<script>
-  // Division → District
-  setupDependentDropdown("division", "district", "/get_districts/", "division_id", itemName=["District","Upazila","Union"], resetIds =["upazila","union"]);
-
-  // District → Upazila
-  setupDependentDropdown("district", "upazila", "/get_upazilas/", "district_id", itemName=["Upazila","Union"], resetIds =["union"]);
-  
-  // District → Union
-  setupDependentDropdown("upazila", "union", "/get_unions/", "upazila_id", itemName=["Union"]);
-</script>
-
-<script>
-var main_map = L.map('main_map').setView([23.8103, 90.4125], 7);
-
-var primary_layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-}).addTo(main_map);
-// L.geoJSON(polygonData).addTo(main_map);
-//New FIXME: ------------
- var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                subdomains:['mt0','mt1','mt2','mt3'],
-                attribution: '© Google'
-                    });
-                // googleSat.addTo(main_map);
-
-var baseLayers = {
-                    "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
-                    "Satellite": googleSat
-                };
-                L.control.layers(baseLayers).addTo(main_map);
-//New FIXME: ------------
-
-var current_marker = L.marker([23.8103, 90.4125]).addTo(main_map)
-    .bindPopup("<span class='text-lg text-amber-600'>Dhaka City</span>")
-    .openPopup();
-
-// TODO: for information divs =============
-const url = "/get_info/"
-var polygon
-
-function information(dropdownId, infoDivId,url_id, clearDiv=[]){
-    const dropdown = document.getElementById(dropdownId);
-    const infoDiv  = document.getElementById(infoDivId);
-
-    dropdown.addEventListener("change", function () {
-        clearDiv.forEach(id => {
-            const deeperDropdown = document.getElementById(id);
-            deeperDropdown.innerHTML = ``;
-        }
-        );
-    const dropdownValue = this.value;
-    fetch(`${url}?${url_id}=${dropdownValue}`)
-        .then(response => response.json())
-        .then(data => {
-
-        infoDivStr = `
-            <fieldset class="fieldset bg-base-200 border-gray-300 my-0 rounded-box w-full border pt-1 px-2">
-            <legend class="fieldset-legend text-xs text-gray-500 mt-0 py-0 font-bold">${dropdownId.toUpperCase()}:</legend>
-            <div class="flex justify-between">
-                <div class="join">
-                <div class="badge badge-soft badge-lg badge-primary text-sm px-1 font-bold join-item"><span class="text-red-600">${data[0].name}</span></div>
-                <div class="badge badge-soft badge-lg badge-primary text-sm px-1 font-bold join-item"><span class="text-red-600"><span class="bangla">[${data[0].bn_name}]</span></div>
+                        <select id="union" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-2.5 text-xs font-semibold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat pr-8">
+                            <option disabled selected value="">Select Union</option>
+                        </select>
+                    </form>
                 </div>
 
-                <div class="join">
-                <a
-                href="https://${data[0].url}" target="_blank">
-                <button class="btn btn-sm join-item px-2 py-0">
-                <img src="{% static '/images/www.svg' %}" width="20px" height="20px" alt="map_marker">
-                </button>
-                </a>`
+                <!-- Dynamic Zone Details Panel: col-span-3 -->
+                <div class="col-span-3 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm shadow-slate-100/30 relative overflow-hidden flex flex-col gap-0 min-h-[350px]">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+                    <div class="flex items-center gap-2.5 mt-1 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-[12px]">Zone Indicators</h3>
+                            <p class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Spatial Metrics
+                                Analysis</p>
+                        </div>
+                    </div>
+                    <!-- <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Details Information</span> -->
+                    
+                    <div id="details_content" class="flex flex-col gap-2 custom-scrollbar max-h-[300px] overflow-y-auto pr-1">
+                        <!-- Default Placeholder: shown when no location is loaded -->
+                        <div id="details_placeholder" class="flex flex-col items-center justify-center py-12 text-slate-400 gap-3 text-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 border border-slate-100">
+                                <svg class="w-5 h-5 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Awaiting Selection</span>
+                                <span class="text-[9px] text-slate-400 leading-relaxed max-w-[160px]">Select geographic filters to view metrics</span>
+                            </div>
+                        </div>
 
-        if (data[0].lat !== 0) {
-            infoDivStr +=`<a 
-                    href="https://www.google.com/maps?q=${data[0].lat},${data[0].long}" target="_blank" title="Goto Google Map">
-                    <button class="btn btn-sm join-item px-2 py-0">
-                    <img src="{% static '/images/map-pin.svg' %}" width="24px" height="16px" alt="map_marker">
-                    </button>
-                    </a>`
-            }
-        infoDivStr +=`</div>
+                        <!-- JavaScript populates these divs dynamically -->
+                        <div id="division_info" class="w-full my-0"></div>
+                        <div id="district_info" class="w-full my-0"></div>
+                        <div id="upazila_info" class="w-full my-0"></div>
+                        <div id="union_info" class="w-full my-0"></div>
+                    </div>
+                </div>
             </div>
-            </fieldset>`
 
-        infoDiv.innerHTML = infoDivStr
+            <!-- Right Column: col-span-5 containing the GIS Interactive Map -->
+            <div id="main_map" class="col-span-5 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-md shadow-slate-100/50 relative overflow-hidden h-[412px] w-full mt-0"></div>
+            
+        </div>
 
-        // ✅ Update Map Marker
-        if (main_map && data[0].lat && data[0].long && data[0].lat != 0) {
-            const lat = parseFloat(data[0].lat);
-            const lng = parseFloat(data[0].long);
+        <!-- Premium Comparative Insight Section -->
+        <section class="mt-4 flex flex-col gap-3">
+            <div class="flex flex-col pl-1">
+                <h2 class="text-lg font-extrabold text-slate-800 tracking-tight">Geographic Comparison Metrics</h2>
+                <p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Largest, smallest, and calculated average area sizes by administrative tier</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-6 p-1">
+                <!-- Divisions comparative card -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"/>
+                                </svg>
+                            </div>
+                            <span class="font-extrabold text-slate-800 text-sm">Divisions Insight</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full uppercase tracking-wider">Tier 1</span>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100/50">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Largest Division</span>
+                                <span class="text-xs font-extrabold text-slate-700 mt-0.5">{{divisions_info.large_division.name}}</span>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-bold bg-indigo-500 text-white rounded-lg shadow-sm shadow-indigo-100">{{divisions_info.large_division.area_km2|floatformat:"2g"}} Km²</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100/50">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Smallest Division</span>
+                                <span class="text-xs font-extrabold text-slate-700 mt-0.5">{{divisions_info.small_division.name}}</span>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-bold bg-slate-200 text-slate-600 rounded-lg">{{divisions_info.small_division.area_km2|floatformat:"2g"}} Km²</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-indigo-50/50 border border-indigo-100/30 mt-1">
+                            <span class="text-[9px] font-bold text-indigo-600 uppercase tracking-wider">Average Tier Area</span>
+                            <span class="text-xs font-extrabold text-indigo-700">{{divisions_info.average_division.avg_area|floatformat:"2g"}} Km²</span>
+                        </div>
+                    </div>
+                </div>
 
-            if (!isNaN(lat) && !isNaN(lng)) {
-                if (current_marker) {
-                    main_map.removeLayer(current_marker);
-                }
-                current_marker = L.marker([lat, lng]).addTo(main_map)
-                    .bindPopup(data[0].name)
-                    .openPopup();
-                main_map.setView([lat, lng], 10);
+                <!-- Districts comparative card -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <span class="font-extrabold text-slate-800 text-sm">Districts Insight</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-100 rounded-full uppercase tracking-wider">Tier 2</span>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-col p-3 rounded-xl bg-slate-50 border border-slate-100/50 relative">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Largest District</span>
+                            <div class="flex justify-between items-start gap-2 mt-0.5">
+                                <span class="text-xs font-extrabold text-slate-700 truncate pr-8 max-w-[170px]" title="{{districts_info.large_district.name}}, {{districts_info.large_district.properties.ADM1_EN}}">{{districts_info.large_district.name}}</span>
+                                <span class="px-2.5 py-1 text-xs font-bold bg-amber-500 text-white rounded-lg shadow-sm shadow-amber-100 absolute right-3 bottom-2.5">{{districts_info.large_district.area_km2|floatformat:"2g"}} Km²</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col p-3 rounded-xl bg-slate-50 border border-slate-100/50 relative">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Smallest District</span>
+                            <div class="flex justify-between items-start gap-2 mt-0.5">
+                                <span class="text-xs font-extrabold text-slate-700 truncate pr-8 max-w-[170px]" title="{{districts_info.small_district.name}}, {{districts_info.small_district.properties.ADM1_EN}}">{{districts_info.small_district.name}}</span>
+                                <span class="px-2.5 py-1 text-xs font-bold bg-slate-200 text-slate-600 rounded-lg absolute right-3 bottom-2.5">{{districts_info.small_district.area_km2|floatformat:"2g"}} Km²</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-amber-50/50 border border-amber-100/30 mt-1">
+                            <span class="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Average Tier Area</span>
+                            <span class="text-xs font-extrabold text-amber-700">{{districts_info.average_district.avg_area|floatformat:"2g"}} Km²</span>
+                        </div>
+                    </div>
+                </div>
 
-            }
-               
-        }
-                if (data[0].polygon_data){
-                    var Address = `<span class="flex justify-between gap-2 items-center relative">
-                        <span class=""><img src="{% static 'images/bd.svg' %}" class="absolute -left-6 -top-1" width=60px" alt="map"></span>
-                        <span class="ml-6">
-                            <span class="text-red-500 font-bold">
-                    ${data[0].polygon_data.features[0].properties.ADM4_EN ? data[0].polygon_data.features[0].properties.ADM4_EN + ",":""}
-                    ${data[0].polygon_data.features[0].properties.ADM3_EN ? data[0].polygon_data.features[0].properties.ADM3_EN + ",":""}
-                    ${data[0].polygon_data.features[0].properties.ADM2_EN ? data[0].polygon_data.features[0].properties.ADM2_EN + ",":""}
-                    ${data[0].polygon_data.features[0].properties.ADM1_EN ?? ""}</span><br>
-                    Area: ${data[0].polygon_data.features[0].area.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km²<br>
-                    Perimeter: ${data[0].polygon_data.features[0].perimeter.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km
-                        </span></span>`
-                    if (polygon) {
-                    main_map.removeLayer(polygon);
+                <!-- Upazila comparative card -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                </svg>
+                            </div>
+                            <span class="font-extrabold text-slate-800 text-sm">Upazilas Insight</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-full uppercase tracking-wider">Tier 3</span>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-col p-3 rounded-xl bg-slate-50 border border-slate-100/50 relative">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Largest Upazila</span>
+                            <div class="flex justify-between items-start gap-2 mt-0.5">
+                                <span class="text-xs font-extrabold text-slate-700 truncate pr-8 max-w-[170px]" title="{{upazilas_info.large_upazila.name}}, {{upazilas_info.large_upazila.properties.ADM3_EN}}">{{upazilas_info.large_upazila.name}}</span>
+                                <span class="px-2.5 py-1 text-xs font-bold bg-emerald-500 text-white rounded-lg shadow-sm shadow-emerald-100 absolute right-3 bottom-2.5">{{upazilas_info.large_upazila.area_km2|floatformat:"2g"}} Km²</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col p-3 rounded-xl bg-slate-50 border border-slate-100/50 relative">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Smallest Upazila</span>
+                            <div class="flex justify-between items-start gap-2 mt-0.5">
+                                <span class="text-xs font-extrabold text-slate-700 truncate pr-8 max-w-[170px]" title="{{upazilas_info.small_upazila.name}}, {{upazilas_info.small_upazila.properties.ADM3_EN}}">{{upazilas_info.small_upazila.name}}</span>
+                                <span class="px-2.5 py-1 text-xs font-bold bg-slate-200 text-slate-600 rounded-lg absolute right-3 bottom-2.5">{{upazilas_info.small_upazila.area_km2|floatformat:"2g"}} Km²</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-emerald-50/50 border border-emerald-100/30 mt-1">
+                            <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Average Tier Area</span>
+                            <span class="text-xs font-extrabold text-emerald-700">{{upazilas_info.average_upazila.avg_area|floatformat:"2g"}} Km²</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Premium Charts Visualization Section (Stacked Vertically) -->
+        <section class="py-2 mx-0 w-full flex flex-col gap-6">
+            <!-- Division Chart Container Card -->
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-sm">Divisions Area Distribution Chart</span>
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Spatial scale analysis by Division tier</p>
+                    </div>
+                </div>
+                <div class="w-full overflow-hidden rounded-xl border border-slate-50 p-2 bg-slate-50/50">
+                    {{ chart_division|safe }}
+                </div>
+            </div>
+
+            <!-- District Chart Container Card -->
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+                <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-sm">Districts Area Insights Chart</span>
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Spatial scale analysis by District tier</p>
+                    </div>
+                </div>
+                <div class="w-full overflow-hidden rounded-xl border border-slate-50 p-2 bg-slate-50/50">
+                    {{ chart_districts|safe }}
+                </div>
+            </div>
+        </section>
+
+        <!-- Elegant Footer Section -->
+        <div class="mt-auto pt-4">
+            {% include 'footer.html' %}
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+    
+    <script>
+        function setupDependentDropdown(parentId, childId, url, paramName = "id", itemName="option", resetIds = []) {
+            const parentDropdown = document.getElementById(parentId);
+            const childDropdown = document.getElementById(childId);
+
+            parentDropdown.addEventListener("change", function () {
+                const parentValue = this.value;
+
+                // Reset immediate child dropdown
+                childDropdown.innerHTML = `<option value="">Select ${itemName[0]}</option>`;
+
+                // Reset all deeper children dropdowns
+                let i = 1;
+                resetIds.forEach(id => {
+                    const deeperDropdown = document.getElementById(id);
+                    if (deeperDropdown) {
+                        deeperDropdown.innerHTML = `<option value="">Select ${itemName[i]}</option>`;
                     }
-                    var polygonCoords = data[0].polygon_data;
-                    polygon = L.geoJSON(polygonCoords, {
-                    color: 'blue',
-                    fillColor: 'lightblue',
-                    fillOpacity: 0.5
-                    }).addTo(main_map)
-                    .bindPopup(Address).openPopup();
+                    i += 1;
+                });
+
+                // Clear structural visual items in the Active Zone details panel if Division dropdown is cleared
+                if (parentId === "division" && !parentValue) {
+                    const placeholder = document.getElementById("details_placeholder");
+                    if (placeholder) placeholder.style.display = "flex";
                 }
-    })
-        .catch(error => {
-            console.error("Error loading info:", error);
+
+                // Populate immediate child dropdown if parent has selected value
+                if (parentValue) {
+                    const placeholder = document.getElementById("details_placeholder");
+                    if (placeholder) placeholder.style.display = "none";
+                    
+                    fetch(`${url}?${paramName}=${parentValue}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                const option = document.createElement("option");
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                childDropdown.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error loading dropdown data:", error);
+                        });
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Division → District dependent loading
+        setupDependentDropdown("division", "district", "/get_districts/", "division_id", itemName=["District","Upazila","Union"], resetIds =["upazila","union"]);
+
+        // District → Upazila dependent loading
+        setupDependentDropdown("district", "upazila", "/get_upazilas/", "district_id", itemName=["Upazila","Union"], resetIds =["union"]);
+        
+        // Upazila → Union dependent loading
+        setupDependentDropdown("upazila", "union", "/get_unions/", "upazila_id", itemName=["Union"]);
+    </script>
+
+    <script>
+        // Initialize Map
+        var main_map = L.map('main_map').setView([23.8103, 90.4125], 7);
+
+        // OpenStreetMap Standard layer
+        var primary_layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(main_map);
+
+        // Google Satellite Map layer
+        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            subdomains:['mt0','mt1','mt2','mt3'],
+            attribution: '© Google'
         });
 
-    });
-    }
-    information(dropdownId="division", infoDivId="division_info", url_id="division_id", clearDiv =["district_info","upazila_info","union_info"])
-    information(dropdownId="district", infoDivId="district_info", url_id="district_id", clearDiv =["upazila_info","union_info"])
-    information(dropdownId="upazila", infoDivId="upazila_info", url_id="upazila_id", clearDiv =["union_info"])
-    information(dropdownId="union", infoDivId="union_info", url_id="union_id")
-</script>
-    </div>
+        // Layer selection controls
+        var baseLayers = {
+            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+            "Satellite": googleSat
+        };
+        L.control.layers(baseLayers, null, { position: 'topright' }).addTo(main_map);
+
+        // Default indicator marker
+        var current_marker = L.marker([23.8103, 90.4125]).addTo(main_map)
+            .bindPopup("<span class='text-xs font-bold text-indigo-600 font-sans'>Dhaka City (Capital)</span>")
+            .openPopup();
+
+        const url = "/get_info/";
+        var polygon;
+
+        // Dynamic details renderer
+        function information(dropdownId, infoDivId, url_id, clearDiv=[]){
+            const dropdown = document.getElementById(dropdownId);
+            const infoDiv  = document.getElementById(infoDivId);
+
+            dropdown.addEventListener("change", function () {
+                // Clear out structural metrics of child divs
+                clearDiv.forEach(id => {
+                    const deeperDropdown = document.getElementById(id);
+                    if (deeperDropdown) {
+                        deeperDropdown.innerHTML = ``;
+                    }
+                });
+
+                const dropdownValue = this.value;
+                if (!dropdownValue) {
+                    infoDiv.innerHTML = ``;
+                    return;
+                }
+
+                // Hide placeholder
+                const placeholder = document.getElementById("details_placeholder");
+                if (placeholder) placeholder.style.display = "none";
+
+                fetch(`${url}?${url_id}=${dropdownValue}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data || data.length === 0) return;
+
+                        // Tier variables config matching the administrative tier
+                        let tierName = "Division";
+                        let tierColor = "bg-indigo-500";
+                        let tierPill = "bg-indigo-50 text-indigo-700 border border-indigo-100";
+
+                        if (dropdownId === "district") {
+                            tierName = "District";
+                            tierColor = "bg-amber-500";
+                            tierPill = "bg-amber-50 text-amber-700 border border-amber-100";
+                        } else if (dropdownId === "upazila") {
+                            tierName = "Upazila";
+                            tierColor = "bg-emerald-500";
+                            tierPill = "bg-emerald-50 text-emerald-700 border border-emerald-100";
+                        } else if (dropdownId === "union") {
+                            tierName = "Union";
+                            tierColor = "bg-rose-500";
+                            tierPill = "bg-rose-50 text-rose-700 border border-rose-100";
+                        }
+
+                        // Generate ultra-premium dynamic card template
+                        let infoDivStr = `
+                        <div class="bg-white border border-slate-100 rounded-xl px-3 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md hover:border-slate-200/80 animate-fade-in my-0">
+                            <div class="absolute top-0 left-0 w-1.5 h-full ${tierColor}"></div>
+                            
+                            <div class="flex items-center justify-between gap-1">
+                                <div class="flex items-center gap-1.5 min-w-0">
+                                    <span class="px-1.5 py-0 text-[8px] font-bold rounded-md uppercase tracking-wider ${tierPill} shrink-0">${tierName}</span>
+                                    <h4 class="font-extrabold text-slate-800 text-xs flex items-center gap-1 truncate">
+                                        <span>${data[0].name}</span>
+                                        <span class="bangla text-slate-400 text-[10px] font-semibold shrink-0">[${data[0].bn_name}]</span>
+                                    </h4>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <a href="https://${data[0].url}" target="_blank" class="w-6.5 h-6.5 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-400 flex items-center justify-center border border-slate-100 transition-all duration-200" title="Visit Official Web Portal">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                        </svg>
+                                    </a>
+                                    ${data[0].lat && data[0].lat !== 0 ? `
+                                    <a href="https://www.google.com/maps?q=${data[0].lat},${data[0].long}" target="_blank" class="w-6.5 h-6.5 rounded-lg bg-slate-50 hover:bg-rose-50 hover:text-rose-600 text-slate-400 flex items-center justify-center border border-slate-100 transition-all duration-200" title="View on Google Maps">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                    </a>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            
+                            ${data[0].polygon_data ? `
+                            <div class="grid grid-cols-2 gap-2 mt-0 pt-1 border-t border-slate-50">
+                                <div class="bg-slate-50/70 rounded-lg p-1 flex flex-col">
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Area Size</span>
+                                    <span class="text-[10px] font-extrabold text-slate-700 mt-0">${parseFloat(data[0].polygon_data.features[0].area).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} Km²</span>
+                                </div>
+                                <div class="bg-slate-50/70 rounded-lg p-1 flex flex-col">
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Perimeter</span>
+                                    <span class="text-[10px] font-extrabold text-slate-700 mt-0">${parseFloat(data[0].polygon_data.features[0].perimeter).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} Km</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>`;
+
+                        infoDiv.innerHTML = infoDivStr;
+
+                        // Center Map and Render beautiful Indicator Marker
+                        if (main_map && data[0].lat && data[0].long && data[0].lat != 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lng = parseFloat(data[0].long);
+
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                if (current_marker) {
+                                    main_map.removeLayer(current_marker);
+                                }
+                                current_marker = L.marker([lat, lng]).addTo(main_map)
+                                    .bindPopup(`<span class="font-sans font-bold text-xs text-indigo-700">${data[0].name}</span>`)
+                                    .openPopup();
+                                main_map.setView([lat, lng], 10);
+                            }
+                        }
+
+                        // Load and Style GIS Polygon data overlay
+                        if (data[0].polygon_data){
+                            var Address = `
+                            <div class="p-1 font-sans min-w-[180px]">
+                                <div class="flex items-center gap-2 mb-2 pb-1.5 border-b border-slate-100">
+                                    <img src="{% static 'images/bd.svg' %}" class="w-12 h-12 rounded-sm shadow-sm" alt="BD flag">
+                                    <span class="text-[9px] font-extrabold text-indigo-600 uppercase tracking-wider">Geographic Info</span>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-800 font-extrabold text-xs leading-snug">
+                                        ${data[0].polygon_data.features[0].properties.ADM4_EN ? data[0].polygon_data.features[0].properties.ADM4_EN + ", " : ""}
+                                        ${data[0].polygon_data.features[0].properties.ADM3_EN ? data[0].polygon_data.features[0].properties.ADM3_EN + ", " : ""}
+                                        ${data[0].polygon_data.features[0].properties.ADM2_EN ? data[0].polygon_data.features[0].properties.ADM2_EN + ", " : ""}
+                                        ${data[0].polygon_data.features[0].properties.ADM1_EN ?? ""}
+                                    </span>
+                                    <div class="grid grid-cols-2 gap-2 mt-1 text-[10px] text-slate-500">
+                                        <div class="flex flex-col bg-slate-50 rounded p-1">
+                                            <span class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Area</span>
+                                            <span class="font-bold text-slate-700">${parseFloat(data[0].polygon_data.features[0].area).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km²</span>
+                                        </div>
+                                        <div class="flex flex-col bg-slate-50 rounded p-1">
+                                            <span class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Perimeter</span>
+                                            <span class="font-bold text-slate-700">${parseFloat(data[0].polygon_data.features[0].perimeter).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} km</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+
+                            if (polygon) {
+                                main_map.removeLayer(polygon);
+                            }
+                            var polygonCoords = data[0].polygon_data;
+                            
+                            // High-end stylish interactive polygon style
+                            polygon = L.geoJSON(polygonCoords, {
+                                color: '#6366f1',
+                                weight: 2.5,
+                                opacity: 0.85,
+                                fillColor: '#818cf8',
+                                fillOpacity: 0.18
+                            }).addTo(main_map)
+                            .bindPopup(Address).openPopup();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error loading structural information details:", error);
+                    });
+            });
+        }
+
+        // Hook up change events for the dropdown selectors
+        information(dropdownId="division", infoDivId="division_info", url_id="division_id", clearDiv =["district_info","upazila_info","union_info"])
+        information(dropdownId="district", infoDivId="district_info", url_id="district_id", clearDiv =["upazila_info","union_info"])
+        information(dropdownId="upazila", infoDivId="upazila_info", url_id="upazila_id", clearDiv =["union_info"])
+        information(dropdownId="union", infoDivId="union_info", url_id="union_id")
+    </script>
 </body>
 </html>
