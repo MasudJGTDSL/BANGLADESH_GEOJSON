@@ -12,5 +12,10 @@ urlpatterns = [
     path("get_upazilas/", views.get_upazilas, name="get_upazilas"),
     path("get_unions/", views.get_unions, name="get_unions"),
     path("get_info/", views.get_info, name="get_info"),
-    path("visitors/", views.visitor_list, name="visitor_list"),
+    
+    # Visitors List (Function Based)
+    path("visitors_fb/", views.visitor_list, name="visitor_list_fb"),
+    
+    # Visitors List (Class Based)
+    path("visitors/", views.Visitor_list.as_view(), name="visitor_list"),
 ]

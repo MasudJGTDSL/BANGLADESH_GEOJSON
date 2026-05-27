@@ -1,5 +1,6 @@
 # pyrefly: ignore [missing-import]
 from django.shortcuts import render
+from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 # pyrefly: ignore [missing-import]
 from django.db.models import F, Case, When,Max, Min, Avg, Value, IntegerField, Count, CharField, TextField, JSONField
@@ -239,3 +240,24 @@ def visitor_list(request):
     }
     return render(request, "visitor_list.html", context)
 
+class Visitor_list(ListView):
+    model = Visitor
+    template_name = "visitor_list.html"
+    context_object_name = "visitors"
+    ordering = ["-visit_date"]
+    paginate_by = 15
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        country_counts = {}
+        for v in self.object_list:
+            if v.country:
+                country_counts[v.country] = country_counts.get(v.country, 0) + v.visit_count
+        
+        top_country = max(country_counts, key=country_counts.get) if country_counts else "None"
+        
+        context["total_visits"] = sum(v.visit_count for v in self.object_list)
+        context["unique_visitors"] = self.object_list.count()
+        context["top_country"] = top_country
+        context["last_visit"] = self.object_list.first().visit_date if self.object_list else None
+        return context
