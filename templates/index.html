@@ -152,7 +152,7 @@
             
             <!-- Left Column: col-span-5 containing both selectors and details -->
             <!-- Main Header inside grid spanning 5 columns -->
-                <div class="col-span-10 text-center mb-4">
+                <div class="lg:col-span-10 text-center mb-4">
                     <h1 class="text-2xl text-center font-bold text-slate-700 tracking-tight">
                         Bangladesh GIS Dashboard
                     </h1>
@@ -162,11 +162,11 @@
             <!-- <h1 class="flex justify-center col-span-10 text-lg items-center font-extrabold bg-white text-slate-800 border border-slate-200/80 rounded-xl my-0 py-1.5 px-4 shadow-sm shadow-slate-100/50">
                 Administrative Zone Information
             </h1> -->
-            <div class="grid lg:grid-cols-5 col-span-5 gap-2">
+            <div class="grid lg:grid-cols-5 lg:col-span-5 gap-2">
                 
 
                 <!-- Select Filters Panel: col-span-2 -->
-                <div class="col-span-2 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm shadow-slate-100/30 relative overflow-hidden flex flex-col gap-3 min-h-[350px]">
+                <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm shadow-slate-100/30 relative overflow-hidden flex flex-col gap-3">
                     <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
            <div class="flex items-center text-[9px] gap-2.5 mb-0 mt-0">
                         <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -247,7 +247,7 @@
             </div>
 
             <!-- Right Column: col-span-5 containing the GIS Interactive Map -->
-            <div id="main_map" class="col-span-5 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-md shadow-slate-100/50 relative overflow-hidden h-[412px] w-full mt-0"></div>
+            <div id="main_map" class="lg:col-span-5 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-md shadow-slate-100/50 relative overflow-hidden min-h-[320px] w-full mt-0"></div>
             
         </div>
 
@@ -380,11 +380,11 @@
         </section>
 
         <!-- Premium Charts Visualization Section (Stacked Vertically) -->
-        <section class="py-2 mx-0 w-full flex flex-col gap-6">
+        <section class="py-2 px-0 mx-0 w-full flex flex-col gap-6">
             <!-- Division Chart Container Card -->
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-0 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
                 <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-                <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+                <div class="flex items-center gap-2.5 pb-0 m-2 mb-0 border-b border-slate-100">
                     <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -395,15 +395,15 @@
                         <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Spatial scale analysis by Division tier</p>
                     </div>
                 </div>
-                <div class="w-full overflow-hidden rounded-xl border border-slate-50 p-2 bg-slate-50/50">
+                <div class="w-full overflow-hidden rounded-xl border border-slate-50 py-0 px-2 bg-slate-50/50">
                     {{ chart_division|safe }}
                 </div>
             </div>
 
             <!-- District Chart Container Card -->
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-0 shadow-sm shadow-slate-100/50 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col gap-4">
                 <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
-                <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+                <div class="flex items-center gap-2.5 pb-0 m-2 mb-0 border-b border-slate-100">
                     <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
@@ -415,7 +415,7 @@
                         <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Spatial scale analysis by District tier</p>
                     </div>
                 </div>
-                <div class="w-full overflow-hidden rounded-xl border border-slate-50 p-2 bg-slate-50/50">
+                <div class="w-full overflow-hidden rounded-xl border border-slate-50 py-0 px-2 bg-slate-50/50">
                     {{ chart_districts|safe }}
                 </div>
             </div>

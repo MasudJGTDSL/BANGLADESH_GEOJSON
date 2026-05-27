@@ -9,28 +9,9 @@ django.setup()
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
-from geo_locations.models import (
-Divisions, Districts, Upazilas, Unions
-)
-
-from django.db.models import (
-    Case,
-    CharField,
-    Count,
-    DecimalField,
-    DurationField,
-    ExpressionWrapper,
-    F,
-    FloatField,
-    IntegerField,
-    OuterRef,
-    Q,
-    Subquery,
-    Sum,
-    Value,
-    When,
-)
-from django.db.models.functions import Cast, Coalesce, Concat, Extract, Round, Trunc
+# from geo_locations.models import (
+# Divisions, Districts, Upazilas, Unions
+# )
 
 
 def pie_chart(query_set, label_field, data_field):
@@ -55,6 +36,7 @@ def chart(table, area_table, title):
     fig_table = go.Bar(
     x = [f'{_}. {item["name"]}' for _, item in enumerate(final_data, start=1)],
     y = [item["area"] for item in final_data],
+    showlegend=False,
     # marker_color= clr,
     # color='area',
     # color_discrete_sequence=['#ef553b', '#636efa', '#00cc96'],
@@ -90,6 +72,8 @@ def chart(table, area_table, title):
             'text': 'Area (Km²)'
         }
     },
+    # Margin(arg=None, autoexpand=None, b=None, l=None, pad=None, r=None, t=None, **kwargs)
+    margin=dict(autoexpand=True, r=10),
     # barmode='stack',
     # legend=dict(
     #         title="ABC", orientation="h", y=1.08, yanchor="top", x=0.5, xanchor="center"
@@ -103,7 +87,8 @@ def chart(table, area_table, title):
 
     return chart_table
 
-"""def dummy_chart():
+"""
+def dummy_chart():
     labels = ['Dummy: Phase01', 'Dummy: Phase02', 'Dummy: Phase03', 'Dummy: Phase04', 'Dummy: Phase05']
     values = [4000000,1000000,6000000,400000,800000]
 
@@ -253,5 +238,5 @@ def chart(table, area_table, title):
                 
 #! To run: python geo_locations/chart.py
 
-if __name__ == "__main__":
-    chart(Divisions)
+# if __name__ == "__main__":
+#     chart(Divisions)
