@@ -9,9 +9,13 @@ def py_update_query(DB_NAME, query):
 
 #! To Run: python py_update_query.py
 DB_NAME = "db.sqlite3"
+# query = """
+#         UPDATE geo_locations_visitor
+#         SET visit_count = 1 WHERE visitor_ip = '118.179.146.204';        
+#         """
 query = """
         UPDATE geo_locations_visitor
-        SET visit_count = 1 WHERE visitor_ip = '118.179.146.204';        
+        SET visit_count = 0 WHERE visitor_ip = '127.0.0.1';        
         """
 
 if __name__ == "__main__":

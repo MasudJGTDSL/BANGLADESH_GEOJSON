@@ -259,7 +259,7 @@ class Visitor_list(LoginRequiredMixin, ListView):
         country_counts = {}
         for v in self.object_list:
             if v.country:
-                country_counts[v.country] = country_counts.get(v.country, 0) + 1 #+ v.visit_count
+                country_counts[v.country] = country_counts.get(v.country, 0) + v.visit_count
         
         # top_country = max(country_counts, key=country_counts.get) if country_counts else "None"
         top_country = max(country_counts.items(), key=lambda x: x[1]) if country_counts else "None"
