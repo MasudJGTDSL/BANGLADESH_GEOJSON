@@ -286,9 +286,16 @@
             </div>
 
         </div>
-{% include 'paginator.html' %}
+                    <button class="lg:col-span-2 mt-2 btn btn-accent btn-sm" onclick="document.getElementById('backup-modal').showModal()">
+                        Download Backup
+                    </button>
+                    {% include 'paginator.html' %}
     </div>
-
+    {% include 'db_backup_modal.html' %}
+        <!-- Elegant Footer Section -->
+        <div class="mt-auto pt-4">
+            {% include 'footer.html' %}
+        </div>
     <!-- JavaScript code for country flag rendering, map generation, and table search -->
     <script>
         // JS Flag Converter (takes two letter country ISO and maps it to native flag emoji)

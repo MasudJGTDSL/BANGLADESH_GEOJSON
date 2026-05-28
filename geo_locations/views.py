@@ -1,7 +1,13 @@
+import os, zipfile, tempfile
+# pyrefly: ignore [missing-import]
+import pyzipper  # pip install pyzipper
+from django.http import FileResponse, JsonResponse, StreamingHttpResponse
+from django.conf import settings
 # pyrefly: ignore [missing-import]
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 # pyrefly: ignore [missing-import]
 from django.db.models import F, Case, When,Max, Min, Avg, Value, IntegerField, Count, CharField, TextField, JSONField
 # pyrefly: ignore [missing-import]
@@ -72,6 +78,7 @@ def index(request):
                                           "divisions_info":divisions_info,
                                           "districts_info":districts_info,
                                           "upazilas_info":upazilas_info,
+                                          "backup_file_name":settings.DATABASE_BACKUP_FILE_NAME
                                           })
 
 def get_districts(request):
@@ -240,7 +247,7 @@ def visitor_list(request):
     }
     return render(request, "visitor_list.html", context)
 
-class Visitor_list(ListView):
+class Visitor_list(LoginRequiredMixin, ListView):
     model = Visitor
     template_name = "visitor_list.html"
     context_object_name = "visitors"
@@ -260,4 +267,48 @@ class Visitor_list(ListView):
         context["unique_visitors"] = self.object_list.count()
         context["top_country"] = top_country
         context["last_visit"] = self.object_list.first().visit_date if self.object_list else None
+        context["backup_file_name"] = settings.DATABASE_BACKUP_FILE_NAME
         return context
+
+
+@login_required
+def backup_files(request):
+    # ✅ Files to include
+    files_to_backup = [
+        settings.DATABASES['default']['NAME'],  # SQLite DB
+        os.path.join(settings.BASE_DIR, ".env"),  # .env file
+        settings.REQUIREMENTS_FILE_PATH,  # requirements.txt
+    ]
+
+    # 🔑 Get password from user input (POST param)
+    # Example: user submits a form with <input name="password">
+    user_password = request.POST.get("password")
+    if not user_password:
+        return StreamingHttpResponse(b"Password required", status=400)
+
+    password_bytes = user_password.encode("utf-8")
+
+    # ✅ Create temp zip
+    tmp_fd, tmp_path = tempfile.mkstemp(suffix=".zip")
+    os.close(tmp_fd)
+
+    # ✅ Use AES encryption
+    with pyzipper.AESZipFile(tmp_path, "w", compression=pyzipper.ZIP_DEFLATED,
+                             encryption=pyzipper.WZ_AES) as zipf:
+        zipf.setpassword(password_bytes)
+        for file_path in files_to_backup:
+            if os.path.exists(file_path):
+                zipf.write(file_path, arcname=os.path.basename(file_path))
+            else:
+                print(f'File Path: "{file_path}" not found!')
+
+    # ✅ Stream + cleanup
+    def file_iterator(path, chunk_size=8192):
+        with open(path, "rb") as f:
+            while chunk := f.read(chunk_size):
+                yield chunk
+        os.remove(path)  # cleanup after streaming
+
+    response = StreamingHttpResponse(file_iterator(tmp_path), content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="{settings.DATABASE_BACKUP_FILE_NAME}"'
+    return response
