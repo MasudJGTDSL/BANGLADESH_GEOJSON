@@ -1,0 +1,76 @@
+{% load static %}
+
+  <!-- Navbar Start: Hamburger for mobile, Logo for all -->
+  <div class="navbar-start">
+    <!-- Mobile Dropdown Menu -->
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h8m-8 6h16"
+          />
+        </svg>
+      </div>
+ <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+      >
+        <!-- <li><a href="/">Home</a></li> -->
+        <li><a href="https://github.com/MasudJGTDSL/BANGLADESH_GEOJSON" target="_blank" class="gap-1.5 font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
+                    <svg width="18" height="18" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-[1.5]">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3364 2.2467C6.81143 2.2467 2.33643 6.7217 2.33643 12.2467C2.33643 16.6717 5.19893 20.4092 9.17393 21.7342C9.67393 21.8217 9.86143 21.5217 9.86143 21.2592C9.86143 21.0217 9.84893 20.2342 9.84893 19.3967C7.33643 19.8592 6.68643 18.7842 6.48643 18.2217C6.37393 17.9342 5.88643 17.0467 5.46143 16.8092C5.11143 16.6217 4.61143 16.1592 5.44893 16.1467C6.23643 16.1342 6.79893 16.8717 6.98643 17.1717C7.88643 18.6842 9.32393 18.2592 9.89893 17.9967C9.98643 17.3467 10.2489 16.9092 10.5364 16.6592C8.31143 16.4092 5.98643 15.5467 5.98643 11.7217C5.98643 10.6342 6.37393 9.7342 7.01143 9.0342C6.91143 8.7842 6.56143 7.7592 7.11143 6.3842C7.11143 6.3842 7.94893 6.1217 9.86143 7.4092C10.6614 7.1842 11.5114 7.0717 12.3614 7.0717C13.2114 7.0717 14.0614 7.1842 14.8614 7.4092C16.7739 6.1092 17.6114 6.3842 17.6114 6.3842C18.1614 7.7592 17.8114 8.7842 17.7114 9.0342C18.3489 9.7342 18.7364 10.6217 18.7364 11.7217C18.7364 15.5592 16.3989 16.4092 14.1739 16.6592C14.5364 16.9717 14.8489 17.5717 14.8489 18.5092C14.8489 19.8467 14.8364 20.9217 14.8364 21.2592C14.8364 21.5217 15.0239 21.8342 15.5239 21.7342C17.5091 21.064 19.2341 19.7882 20.4562 18.0862C21.6783 16.3843 22.3359 14.342 22.3364 12.2467C22.3364 6.7217 17.8614 2.2467 12.3364 2.2467Z" fill="currentColor"/>
+                    </svg>
+                    GitHub
+                </a></li>
+        <li><a href="{% url 'geo_locations:index' %}" class="gap-1.5 font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"/></svg>
+                    Explorer
+                </a></li>
+                {% if user.is_authenticated %}
+
+        <li><a href="{% url 'geo_locations:visitor_list' %}" class="gap-1.5 font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Visitor Logs
+                </a>
+</li>
+        <li>
+          <a href="{% url 'account_logout' %}" class="gap-1.5 font-semibold text-rose-600 hover:bg-rose-50 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Log Out
+                </a>
+        </li>
+        {% else %}
+        <li><a href="{% url 'geo_locations:visitor_list' %}" class="gap-1.5 font-semibold text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200" title="Authentication required to view visitor logs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Visitor Logs
+                </a></li>
+                <li>
+                  <a href="{% url 'account_login' %}" class="gap-1 shadow-md shadow-indigo-100 bg-gray-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Log In
+                </a>
+                {% endif %}
+                </li>
+      </ul>
+      <!-- Mobile Menu Content end -->
+
+    </div>
+    <!-- <a
+      class="btn btn-ghost text-xl font-bold hidden lg:flex md:flex lg:align-middle md:align-middle lg:items-center md:items-center exo2bold"
+      href="/"
+      ><img alt="MS" width="18px" height="18px" src="{% static 'images/MS_1.svg' %}"/>MahimSoft</a
+    >
+    <a class="btn btn-ghost text-xl lg:hidden md:hidden CompanyNameFont">MS</a> -->
+  </div>
+
+  
+
